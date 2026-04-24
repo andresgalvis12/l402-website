@@ -1,0 +1,2605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>L402 — Pay for APIs with Lightning. Authenticate with the receipt.</title>
+<meta name="description" content="L402 is a standard to support the authentication and payment of services over the internet. Pay for APIs with Lightning. Authenticate with the receipt. HTTP 402, realized. Built with a focus on agentic commerce by Lightning Labs.">
+<meta name="keywords" content="L402, Lightning Network, HTTP 402, API payments, micropayments, macaroons, Lightning Labs, Bitcoin, AI agent payments, LSAT, machine-to-machine payments, pay per API call, bearer token payment protocol, credential delegation, stateless API authentication, private machine payments, censorship resistant payments, agentic payments, decentralized API payments, programmable payments, software paying for software">
+<meta name="author" content="Lightning Labs">
+<meta name="theme-color" content="#000000">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="L402 — Native Payments for the Internet">
+<meta property="og:description" content="L402 is a standard to support the authentication and payment of services over the internet. Pay for APIs with Lightning. Authenticate with the receipt. HTTP 402, realized.">
+<meta property="og:url" content="https://l402.org">
+<meta property="og:site_name" content="L402 Protocol">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="L402 — Native Payments for the Internet">
+<meta name="twitter:description" content="Pay for APIs with Lightning. Authenticate with the receipt. HTTP 402, realized.">
+<meta name="twitter:site" content="@lightning">
+
+<!-- Canonical -->
+<link rel="canonical" href="https://l402.org">
+
+<!-- LLM / Agent discovery -->
+<link rel="llms" href="/llms.txt" type="text/plain" title="L402 Protocol — Machine-readable summary">
+
+<!-- Favicon (Lightning bolt SVG inline) -->
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M13 2L4.5 13.5H11.5L11 22L19.5 10.5H12.5L13 2Z' fill='%23fff'/></svg>" type="image/svg+xml">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Structured data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "L402 Protocol",
+  "description": "L402 is a standard to facilitate the authentication and trade of services such as API endpoints and computational resources. Built with a focus on agentic commerce by Lightning Labs.",
+  "url": "https://l402.org",
+  "creator": {
+    "@type": "Organization",
+    "name": "Lightning Labs",
+    "url": "https://lightning.engineering"
+  },
+  "about": {
+    "@type": "SoftwareSourceCode",
+    "name": "L402",
+    "codeRepository": "https://github.com/lightninglabs/L402",
+    "programmingLanguage": ["Go", "JavaScript", "Python"],
+    "license": "https://github.com/lightninglabs/L402/blob/master/LICENSE"
+  }
+}
+</script>
+<style>
+/* ============================================================
+   CSS VARIABLES
+   ============================================================ */
+:root {
+  --black: #000000;
+  --white: #ffffff;
+  --purple: #7C3AED;
+  --text-white: #ffffff;
+  --text-black: #0a0a0a;
+  --text-muted-dark: rgba(255,255,255,0.45);
+  --text-dim-dark: rgba(255,255,255,0.25);
+  --text-ghost-dark: rgba(255,255,255,0.12);
+  --border-dark: rgba(255,255,255,0.06);
+  --border-dark-hover: rgba(255,255,255,0.12);
+  --surface-dark: #0a0a0a;
+  --cyan: #2DD4BF;
+  --lime: #C4F046;
+  --violet: #8B5CF6;
+  --orange: #F97316;
+  --sky: #38BDF8;
+  --font-sans: 'Instrument Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', monospace;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--black);
+  color: var(--text-white);
+  overflow-x: hidden;
+}
+
+/* ============================================================
+   NAV
+   ============================================================ */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 48px;
+  transition: background 0.4s, padding 0.4s;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 0.5px solid transparent;
+}
+
+.nav.scrolled {
+  padding: 14px 48px;
+  background: rgba(0,0,0,0.92);
+  border-bottom-color: var(--border-dark);
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 36px;
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-white);
+  text-decoration: none;
+  letter-spacing: -0.5px;
+  position: relative;
+}
+
+.nav-logo svg { width: 16px; height: 16px; transition: filter 0.3s; }
+.nav-logo svg path { fill: var(--cyan); }
+
+.nav-logo:hover svg {
+  filter: drop-shadow(0 0 6px rgba(45,212,191,0.8)) drop-shadow(0 0 14px rgba(45,212,191,0.4));
+}
+
+.nav-links {
+  display: flex;
+  gap: 28px;
+}
+
+.nav-links a {
+  font-size: 13px;
+  color: var(--text-muted-dark);
+  text-decoration: none;
+  font-weight: 400;
+  transition: color 0.2s;
+}
+
+.nav-links a:hover { color: var(--text-white); }
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.nav-right a {
+  font-size: 13px;
+  color: var(--text-muted-dark);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.nav-right a:hover { color: var(--text-white); }
+
+.btn-nav {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--cyan);
+  background: transparent;
+  padding: 7px 16px;
+  border-radius: 6px;
+  border: 0.5px solid rgba(45,212,191,0.25);
+  text-decoration: none;
+  transition: border-color 0.2s, color 0.2s;
+  letter-spacing: 0.3px;
+}
+
+.btn-nav:hover {
+  border-color: rgba(45,212,191,0.5);
+  color: var(--text-white);
+}
+
+/* ============================================================
+   HERO LANDING — Cinematic reveal
+   ============================================================ */
+.hero-landing {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 48px 80px;
+  overflow: hidden;
+  background: var(--black);
+  z-index: 1;
+}
+
+.hero-landing-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  max-width: 560px;
+}
+
+.hero-overline {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--cyan);
+  letter-spacing: 0.5px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  opacity: 0;
+  transform: translateY(24px);
+  animation: fadeInUp 1.2s 1.4s var(--ease-out-expo) forwards;
+}
+
+.hero-overline::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--cyan);
+}
+
+.hero-h1 { display: none; }
+
+.hero-body {
+  font-size: 18px;
+  color: rgba(255,255,255,0.55);
+  font-weight: 400;
+  line-height: 1.65;
+  margin-bottom: 40px;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(24px);
+  animation: fadeInUp 1.2s 1.8s var(--ease-out-expo) forwards;
+}
+
+.hero-ctas {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  opacity: 0;
+  transform: translateY(24px);
+  animation: fadeInUp 1.2s 2.2s var(--ease-out-expo) forwards;
+}
+
+.btn-primary {
+  padding: 12px 28px;
+  background: var(--white);
+  color: var(--black);
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(255,255,255,0.1);
+}
+
+.btn-primary:active { transform: scale(0.98); }
+
+.btn-secondary {
+  padding: 12px 28px;
+  background: transparent;
+  color: rgba(255,255,255,0.6);
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 8px;
+  border: 0.5px solid var(--border-dark-hover);
+  text-decoration: none;
+  transition: border-color 0.2s, background 0.2s;
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  border-color: rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.03);
+}
+
+/* ============================================================
+   HERO VISUAL — Interactive particle field + cursor glow
+   ============================================================ */
+.hero-particles {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.hero-particles canvas {
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Cursor glow that follows mouse */
+.cursor-glow {
+  position: fixed;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 0.4s;
+  background: radial-gradient(
+    circle,
+    rgba(45,212,191,0.06) 0%,
+    rgba(139,92,246,0.03) 40%,
+    transparent 70%
+  );
+  transform: translate(-50%, -50%);
+}
+
+.cursor-glow.visible { opacity: 1; }
+
+/* ============================================================
+   SCROLL NARRATIVE — HERO SCENES
+   ============================================================ */
+.hero-scroll {
+  position: relative;
+  height: 400vh;
+  background: var(--black);
+  z-index: 2;
+}
+
+.hero-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: var(--black);
+}
+
+.scene {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+.scene.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* Scene text styles */
+.scene-overline {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.8s 0.1s, transform 0.8s 0.1s var(--ease-out-expo);
+}
+
+.scene.active .scene-overline {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.scene-headline {
+  font-size: clamp(48px, 8vw, 100px);
+  font-weight: 700;
+  letter-spacing: -3px;
+  line-height: 1;
+  text-align: center;
+  margin-bottom: 20px;
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.9s 0.2s, transform 0.9s 0.2s var(--ease-out-expo);
+}
+
+.scene.active .scene-headline {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.scene-body {
+  font-size: 17px;
+  color: var(--text-muted-dark);
+  text-align: center;
+  max-width: 500px;
+  line-height: 1.6;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s 0.35s, transform 0.8s 0.35s var(--ease-out-expo);
+}
+
+.scene.active .scene-body {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ============================================================
+   TIMELINE — Horizontal scroll-driven history
+   ============================================================ */
+.timeline-section {
+  height: 700vh;
+  position: relative;
+  background: var(--black);
+  z-index: 2;
+}
+
+.timeline-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+  padding: 0 64px;
+}
+
+.timeline-header {
+  margin-bottom: 56px;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: tlIn 1s 0.3s var(--ease-out-expo) forwards;
+}
+
+@keyframes tlIn { to { opacity: 1; transform: translateY(0); } }
+
+.timeline-overline {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--cyan);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.timeline-overline::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--cyan);
+}
+
+.timeline-title {
+  font-size: clamp(26px, 3.5vw, 38px);
+  font-weight: 700;
+  letter-spacing: -1.5px;
+  line-height: 1.15;
+}
+
+.timeline-title .dim { color: rgba(255,255,255,0.3); }
+
+.timeline-track-wrapper { position: relative; padding-bottom: 8px; }
+
+.timeline-line {
+  position: absolute;
+  top: 5px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(255,255,255,0.04);
+}
+
+.timeline-line-progress {
+  position: absolute;
+  top: 5px;
+  left: 0;
+  height: 1px;
+  width: 0%;
+  background: linear-gradient(90deg, rgba(255,255,255,0.15), var(--cyan), var(--violet), var(--lime));
+  will-change: width;
+}
+
+.timeline-track { display: flex; will-change: transform; }
+
+.timeline-item {
+  flex-shrink: 0;
+  width: 300px;
+  margin-right: 24px;
+  opacity: 0.1;
+  transform: translateY(6px);
+  transition: opacity 0.6s var(--ease-out-expo), transform 0.6s var(--ease-out-expo);
+}
+
+.timeline-item.active { opacity: 1; transform: translateY(0); }
+.timeline-item.past { opacity: 0.28; transform: translateY(0); }
+
+.timeline-dot-wrap { height: 10px; margin-bottom: 28px; position: relative; }
+
+.timeline-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  transition: transform 0.5s var(--ease-out-expo);
+}
+
+.timeline-item.active .timeline-dot { transform: scale(1.5); }
+
+.timeline-dot::after {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  background: inherit;
+  opacity: 0;
+  filter: blur(10px);
+  transition: opacity 0.5s;
+  z-index: -1;
+}
+
+.timeline-item.active .timeline-dot::after { opacity: 0.4; }
+
+.timeline-year {
+  font-family: var(--font-mono);
+  font-size: 36px;
+  font-weight: 700;
+  letter-spacing: -1.5px;
+  line-height: 1;
+  margin-bottom: 6px;
+  color: rgba(255,255,255,0.18);
+  transition: color 0.5s;
+}
+
+.timeline-item.active .timeline-year { color: #fff; }
+
+.timeline-label {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+  line-height: 1.3;
+  margin-bottom: 10px;
+  color: rgba(255,255,255,0.3);
+  transition: color 0.5s;
+}
+
+.timeline-item.active .timeline-label { color: #fff; }
+
+.timeline-desc {
+  font-size: 13px;
+  color: rgba(255,255,255,0.15);
+  line-height: 1.6;
+  max-width: 270px;
+  transition: color 0.5s;
+}
+
+.timeline-item.active .timeline-desc { color: rgba(255,255,255,0.5); }
+
+.timeline-tag {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 4px;
+  margin-top: 14px;
+  border: 0.5px solid;
+  opacity: 0.6;
+  transition: opacity 0.4s;
+}
+
+.timeline-item.active .timeline-tag { opacity: 1; }
+
+.timeline-item.future .timeline-dot {
+  background: transparent !important;
+  border: 1.5px dashed var(--violet);
+}
+
+.timeline-item.future .timeline-dot::after { background: var(--violet); }
+
+.timeline-item.future .timeline-year,
+.timeline-item.future.active .timeline-year {
+  background: linear-gradient(90deg, var(--cyan), var(--violet));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.timeline-counter {
+  position: absolute;
+  bottom: 48px;
+  right: 64px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: rgba(255,255,255,0.12);
+  letter-spacing: 0.5px;
+}
+
+.timeline-counter .c { color: rgba(255,255,255,0.4); font-weight: 500; }
+
+/* ---- Scene 1: L402 (the solution) ---- */
+.scene-1 .scene-overline { color: var(--cyan); }
+
+.scene-1-headline {
+  color: var(--text-white);
+  font-size: clamp(80px, 12vw, 140px);
+  letter-spacing: -5px;
+}
+
+.scene-1-line {
+  width: 0;
+  height: 2px;
+  background: var(--cyan);
+  margin-bottom: 24px;
+  transition: width 0.8s 0.3s var(--ease-out-expo);
+  border-radius: 1px;
+}
+
+.scene-1.active .scene-1-line { width: 120px; }
+
+.scene-1-blocks {
+  display: flex;
+  gap: 8px;
+  margin-top: 32px;
+}
+
+.scene-1-blocks i {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  opacity: 0;
+  transform: scale(0.5);
+  transition: opacity 0.4s var(--ease-out-expo), transform 0.4s var(--ease-out-expo);
+}
+
+.scene-1.active .scene-1-blocks i:nth-child(1) { opacity: 1; transform: scale(1); transition-delay: 0.5s; }
+.scene-1.active .scene-1-blocks i:nth-child(2) { opacity: 1; transform: scale(1); transition-delay: 0.6s; }
+.scene-1.active .scene-1-blocks i:nth-child(3) { opacity: 1; transform: scale(1); transition-delay: 0.7s; }
+.scene-1.active .scene-1-blocks i:nth-child(4) { opacity: 1; transform: scale(1); transition-delay: 0.8s; }
+.scene-1.active .scene-1-blocks i:nth-child(5) { opacity: 1; transform: scale(1); transition-delay: 0.9s; }
+
+/* ---- Scene 2: The Flow — Protocol visualization ---- */
+.scene-3 { padding: 48px; }
+.scene-3 .scene-overline { color: var(--cyan); }
+
+.scene-3 .scene-headline {
+  font-size: clamp(28px, 4vw, 40px);
+  letter-spacing: -1.2px;
+  margin-bottom: 40px;
+}
+
+.flow-diagram {
+  width: 100%;
+  max-width: 480px;
+  margin-bottom: 28px;
+}
+
+.flow-exchange {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.flow-block {
+  border-radius: 8px;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.7s var(--ease-out-expo), transform 0.7s var(--ease-out-expo);
+}
+
+.flow-block-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.3px;
+}
+
+.flow-block-dir {
+  font-size: 9px;
+  opacity: 0.35;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.flow-block-body {
+  padding: 8px 14px 12px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.flow-block-1 {
+  background: rgba(255,255,255,0.03);
+  border: 0.5px solid rgba(255,255,255,0.06);
+}
+.flow-block-1 .flow-block-header { color: rgba(255,255,255,0.45); }
+.flow-block-1 .flow-block-body { color: rgba(255,255,255,0.3); }
+.flow-block-1 .hl { color: var(--text-white); font-weight: 500; }
+
+.flow-block-2 {
+  background: rgba(45,212,191,0.03);
+  border: 0.5px solid rgba(45,212,191,0.1);
+}
+.flow-block-2 .flow-block-header { color: var(--cyan); }
+.flow-block-2 .flow-block-body { color: rgba(255,255,255,0.25); }
+.flow-block-2 .hl { color: rgba(45,212,191,0.7); }
+
+.flow-block-3 {
+  background: rgba(196,240,70,0.03);
+  border: 0.5px solid rgba(196,240,70,0.1);
+}
+.flow-block-3 .flow-block-header { color: var(--lime); }
+.flow-block-3 .flow-block-body { color: rgba(255,255,255,0.25); }
+.flow-block-3 .hl { color: rgba(196,240,70,0.7); }
+
+.flow-block-4 {
+  background: rgba(139,92,246,0.03);
+  border: 0.5px solid rgba(139,92,246,0.1);
+}
+.flow-block-4 .flow-block-header { color: var(--violet); }
+.flow-block-4 .flow-block-body { color: rgba(255,255,255,0.25); }
+.flow-block-4 .hl { color: rgba(139,92,246,0.7); }
+
+.scene-3[data-step="1"] .flow-block-1,
+.scene-3[data-step="2"] .flow-block-1, .scene-3[data-step="2"] .flow-block-2,
+.scene-3[data-step="3"] .flow-block-1, .scene-3[data-step="3"] .flow-block-2, .scene-3[data-step="3"] .flow-block-3,
+.scene-3[data-step="4"] .flow-block {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.flow-summary {
+  font-size: 15px;
+  color: var(--text-muted-dark);
+  text-align: center;
+  max-width: 460px;
+  line-height: 1.55;
+  min-height: 24px;
+}
+
+.flow-summary span { display: none; }
+.flow-summary span.active { display: inline; }
+
+/* ---- Scene 3: The Macaroon ---- */
+.scene-4 .scene-overline { color: var(--lime); }
+
+.scene-4-headline {
+  font-size: clamp(32px, 5vw, 48px);
+  letter-spacing: -1.5px;
+  margin-bottom: 36px;
+}
+
+.macaroon-layout {
+  display: flex;
+  gap: 24px;
+  max-width: 640px;
+  width: 100%;
+  margin-bottom: 24px;
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.6s 0.2s, transform 0.6s 0.2s var(--ease-out-expo);
+}
+
+.scene-4.active .macaroon-layout { opacity: 1; transform: translateY(0); }
+
+.macaroon-token {
+  flex: 1;
+  border: 0.5px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.macaroon-header {
+  padding: 11px 16px;
+  border-bottom: 0.5px solid rgba(255,255,255,0.04);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-dim-dark);
+  display: flex;
+  justify-content: space-between;
+  background: rgba(255,255,255,0.02);
+}
+
+.macaroon-header b { color: var(--text-white); font-weight: 500; }
+
+.caveat {
+  padding: 9px 16px;
+  border-bottom: 0.5px solid rgba(255,255,255,0.03);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  opacity: 0;
+  transform: translateX(14px);
+  transition: opacity 0.45s var(--ease-out-expo), transform 0.45s var(--ease-out-expo);
+}
+
+.caveat:last-child { border-bottom: none; }
+
+.caveat-dot { width: 5px; height: 5px; border-radius: 2px; flex-shrink: 0; }
+.caveat-key { color: rgba(255,255,255,0.2); }
+.caveat-value { color: rgba(255,255,255,0.6); margin-left: auto; }
+
+.macaroon-sig {
+  padding: 9px 16px;
+  border-top: 0.5px solid rgba(255,255,255,0.04);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.01);
+  word-break: break-all;
+  opacity: 0;
+  transition: opacity 0.5s 1.4s;
+}
+
+.scene-4.active .macaroon-sig { opacity: 1; }
+
+.scene-4.active .caveat:nth-child(2) { opacity: 1; transform: translateX(0); transition-delay: 0.4s; }
+.scene-4.active .caveat:nth-child(3) { opacity: 1; transform: translateX(0); transition-delay: 0.55s; }
+.scene-4.active .caveat:nth-child(4) { opacity: 1; transform: translateX(0); transition-delay: 0.7s; }
+.scene-4.active .caveat:nth-child(5) { opacity: 1; transform: translateX(0); transition-delay: 0.85s; }
+.scene-4.active .caveat:nth-child(6) { opacity: 1; transform: translateX(0); transition-delay: 1.0s; }
+
+.macaroon-side {
+  width: 190px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.mac-point {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.5s var(--ease-out-expo), transform 0.5s var(--ease-out-expo);
+}
+
+.scene-4.active .mac-point:nth-child(1) { opacity: 1; transform: translateY(0); transition-delay: 0.5s; }
+.scene-4.active .mac-point:nth-child(2) { opacity: 1; transform: translateY(0); transition-delay: 0.7s; }
+.scene-4.active .mac-point:nth-child(3) { opacity: 1; transform: translateY(0); transition-delay: 0.9s; }
+.scene-4.active .mac-point:nth-child(4) { opacity: 1; transform: translateY(0); transition-delay: 1.1s; }
+
+.mac-point-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 3px;
+}
+
+.mac-point-text {
+  font-size: 12px;
+  color: rgba(255,255,255,0.35);
+  line-height: 1.5;
+}
+
+.macaroon-docs {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--lime);
+  text-decoration: none;
+  opacity: 0;
+  transition: opacity 0.5s 1.5s, color 0.2s;
+  letter-spacing: 0.3px;
+}
+
+.macaroon-docs:hover { color: var(--text-white); }
+.scene-4.active .macaroon-docs { opacity: 1; }
+
+/* ---- Scene 4: Agent-native — Property statements ---- */
+.scene-5 .scene-overline { color: var(--violet); }
+
+.scene-5-headline {
+  font-size: clamp(36px, 6vw, 56px);
+  letter-spacing: -2px;
+  margin-bottom: 48px;
+}
+
+.agent-props {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  max-width: 420px;
+  width: 100%;
+  margin-bottom: 32px;
+}
+
+.agent-prop {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 0.5px solid rgba(255,255,255,0.04);
+  opacity: 0;
+  transform: translateX(-12px);
+  transition: opacity 0.5s var(--ease-out-expo), transform 0.5s var(--ease-out-expo);
+}
+
+.agent-prop:last-child { border-bottom: none; }
+
+.scene-5.active .agent-prop:nth-child(1) { opacity: 1; transform: translateX(0); transition-delay: 0.3s; }
+.scene-5.active .agent-prop:nth-child(2) { opacity: 1; transform: translateX(0); transition-delay: 0.45s; }
+.scene-5.active .agent-prop:nth-child(3) { opacity: 1; transform: translateX(0); transition-delay: 0.6s; }
+.scene-5.active .agent-prop:nth-child(4) { opacity: 1; transform: translateX(0); transition-delay: 0.75s; }
+.scene-5.active .agent-prop:nth-child(5) { opacity: 1; transform: translateX(0); transition-delay: 0.9s; }
+
+.agent-prop-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  flex-shrink: 0;
+  width: 110px;
+}
+
+.agent-prop-value {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-white);
+  letter-spacing: -0.2px;
+}
+
+.scene-5-tagline {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: rgba(255,255,255,0.2);
+  text-align: center;
+  max-width: 480px;
+  line-height: 1.6;
+  opacity: 0;
+  transition: opacity 0.6s 1.1s;
+}
+
+.scene-5.active .scene-5-tagline { opacity: 1; }
+
+/* ============================================================
+   PROGRESS DOTS
+   ============================================================ */
+.progress-dots {
+  position: absolute;
+  right: 32px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 10;
+}
+
+.progress-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  transition: background 0.3s, transform 0.3s var(--ease-out-expo);
+}
+
+.progress-dot.active {
+  transform: scale(1.4);
+}
+
+.progress-dot[data-scene="1"].active { background: var(--cyan); }
+.progress-dot[data-scene="2"].active { background: var(--cyan); }
+.progress-dot[data-scene="3"].active { background: var(--lime); }
+.progress-dot[data-scene="4"].active { background: var(--violet); }
+
+/* ============================================================
+   PHASE 2 — WHITE SECTION
+   ============================================================ */
+.white-section {
+  background: var(--white);
+  color: var(--text-black);
+  padding: 0;
+}
+
+.flow-bar {
+  display: flex;
+  border-bottom: 0.5px solid rgba(0,0,0,0.06);
+}
+
+.flow-bar-step {
+  flex: 1;
+  padding: 32px 24px;
+  text-align: center;
+}
+
+.flow-bar-step + .flow-bar-step {
+  border-left: 0.5px solid rgba(0,0,0,0.06);
+}
+
+.flow-bar-num {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: rgba(0,0,0,0.2);
+  margin-bottom: 8px;
+}
+
+.flow-bar-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-black);
+  margin-bottom: 4px;
+  letter-spacing: -0.2px;
+}
+
+.flow-bar-desc {
+  font-size: 12px;
+  color: rgba(0,0,0,0.4);
+  line-height: 1.4;
+}
+
+.stats-section { padding: 72px 48px; }
+
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: rgba(0,0,0,0.06);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.stat-cell {
+  background: var(--white);
+  padding: 36px 24px;
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 36px;
+  font-weight: 700;
+  letter-spacing: -1.5px;
+  color: var(--text-black);
+}
+
+.stat-value span { color: var(--cyan); }
+
+.stat-label {
+  font-size: 12px;
+  color: rgba(0,0,0,0.35);
+  margin-top: 4px;
+}
+
+.stack-section { padding: 0 48px 96px; }
+
+.stack-header { text-align: center; margin-bottom: 40px; }
+
+.stack-overline {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--cyan);
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+
+.stack-title {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -1px;
+  color: var(--text-black);
+}
+
+.stack-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.stack-card {
+  background: #f8f8f8;
+  border: 0.5px solid rgba(0,0,0,0.06);
+  border-radius: 12px;
+  padding: 28px 24px;
+  transition: border-color 0.25s, transform 0.25s var(--ease-out-expo);
+}
+
+.stack-card:hover {
+  border-color: rgba(0,0,0,0.12);
+  transform: translateY(-2px);
+}
+
+.stack-card-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.stack-card-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.stack-card-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-black);
+  letter-spacing: -0.3px;
+}
+
+.stack-card-type {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: rgba(0,0,0,0.3);
+  margin-bottom: 14px;
+  margin-left: 18px;
+}
+
+.stack-card-desc {
+  font-size: 13px;
+  color: rgba(0,0,0,0.5);
+  line-height: 1.55;
+  margin-bottom: 18px;
+}
+
+.stack-card-code {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: #7C3AED;
+  background: rgba(124,58,237,0.04);
+  padding: 10px 36px 10px 12px;
+  border-radius: 6px;
+  border: 0.5px solid rgba(124,58,237,0.08);
+  position: relative;
+  word-break: break-all;
+  line-height: 1.5;
+}
+
+.copy-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 24px;
+  height: 24px;
+  background: rgba(124,58,237,0.06);
+  border: 0.5px solid rgba(124,58,237,0.12);
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, border-color 0.2s;
+  padding: 0;
+}
+
+.copy-btn:hover {
+  background: rgba(124,58,237,0.12);
+  border-color: rgba(124,58,237,0.2);
+}
+
+.copy-btn svg {
+  width: 12px;
+  height: 12px;
+  stroke: rgba(124,58,237,0.5);
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.copy-btn:hover svg { stroke: #7C3AED; }
+
+.copy-btn.copied svg { stroke: #22c55e; }
+.copy-btn.copied { border-color: rgba(34,197,94,0.2); background: rgba(34,197,94,0.06); }
+
+.stack-card-links {
+  display: flex;
+  gap: 16px;
+  margin-top: 14px;
+}
+
+.stack-card-links a {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: rgba(0,0,0,0.35);
+  text-decoration: none;
+  letter-spacing: 0.3px;
+  transition: color 0.2s;
+}
+
+.stack-card-links a:hover { color: var(--text-black); }
+
+/* CSS view() reveals */
+@supports (animation-timeline: view()) {
+  .reveal-v {
+    opacity: 0;
+    transform: translateY(32px);
+    animation: rvUp 1ms linear forwards;
+    animation-timeline: view();
+    animation-range: entry 0% entry 30%;
+  }
+  @keyframes rvUp { to { opacity: 1; transform: translateY(0); } }
+
+  .stack-grid .stack-card:nth-child(2) { animation-range: entry 5% entry 33%; }
+  .stack-grid .stack-card:nth-child(3) { animation-range: entry 10% entry 38%; }
+}
+
+@supports not (animation-timeline: view()) {
+  .reveal-v { opacity: 1; transform: none; }
+}
+
+/* ============================================================
+   PHASE 3 — PURPLE SECTION: Agent-ready
+   ============================================================ */
+.purple-section {
+  background: var(--purple);
+  color: var(--text-white);
+  padding: 96px 48px;
+}
+
+.purple-header {
+  text-align: center;
+  margin-bottom: 56px;
+}
+
+.purple-overline {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+.purple-title {
+  font-size: clamp(32px, 5vw, 48px);
+  font-weight: 700;
+  letter-spacing: -2px;
+  line-height: 1.1;
+}
+
+.purple-subtitle {
+  font-size: 17px;
+  color: rgba(255,255,255,0.5);
+  margin-top: 16px;
+  max-width: 520px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
+}
+
+/* Terminal demo */
+.terminal-wrap {
+  max-width: 640px;
+  margin: 0 auto 64px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(0,0,0,0.4);
+  border: 0.5px solid rgba(255,255,255,0.08);
+}
+
+.terminal-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 16px;
+  background: rgba(0,0,0,0.3);
+  border-bottom: 0.5px solid rgba(255,255,255,0.06);
+}
+
+.terminal-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.12);
+}
+
+.terminal-bar-title {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: rgba(255,255,255,0.25);
+  margin-left: 8px;
+}
+
+.terminal-body {
+  padding: 20px 20px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.8;
+  color: rgba(255,255,255,0.45);
+  min-height: 180px;
+}
+
+.terminal-line {
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.4s, transform 0.4s var(--ease-out-expo);
+}
+
+.terminal-line.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.terminal-prompt { color: var(--cyan); }
+.terminal-cmd { color: rgba(255,255,255,0.8); }
+.terminal-comment { color: rgba(255,255,255,0.2); }
+.terminal-success { color: var(--lime); }
+.terminal-url { color: var(--violet); }
+.terminal-value { color: var(--orange); }
+
+/* Use case cards */
+.use-cases {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  max-width: 960px;
+  margin: 0 auto 56px;
+}
+
+.use-case {
+  background: rgba(255,255,255,0.06);
+  border: 0.5px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 28px 24px;
+  transition: background 0.25s, transform 0.25s var(--ease-out-expo);
+}
+
+.use-case:hover {
+  background: rgba(255,255,255,0.08);
+  transform: translateY(-2px);
+}
+
+.use-case-num {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: rgba(255,255,255,0.25);
+  margin-bottom: 14px;
+}
+
+.use-case-title {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+  margin-bottom: 8px;
+}
+
+.use-case-desc {
+  font-size: 13px;
+  color: rgba(255,255,255,0.45);
+  line-height: 1.55;
+}
+
+/* Bottom CTA */
+.purple-cta {
+  text-align: center;
+}
+
+.purple-cta-text {
+  font-size: 14px;
+  color: rgba(255,255,255,0.35);
+  margin-bottom: 20px;
+}
+
+.btn-purple {
+  display: inline-block;
+  padding: 14px 36px;
+  background: var(--white);
+  color: var(--purple);
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-purple:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 24px rgba(255,255,255,0.15);
+}
+
+.btn-purple:active { transform: scale(0.98); }
+
+.footer {
+  background: var(--black);
+  border-top: 0.5px solid var(--border-dark);
+  padding: 48px 48px 32px;
+}
+
+.footer-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 40px;
+}
+
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-white);
+  letter-spacing: -0.3px;
+  margin-bottom: 8px;
+}
+
+.footer-brand svg { width: 16px; height: 16px; }
+
+.footer-tagline {
+  font-size: 12px;
+  color: var(--text-dim-dark);
+  max-width: 280px;
+  line-height: 1.5;
+}
+
+.footer-links {
+  display: flex;
+  gap: 40px;
+}
+
+.footer-col-title {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: rgba(255,255,255,0.2);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.footer-col a {
+  display: block;
+  font-size: 13px;
+  color: var(--text-muted-dark);
+  text-decoration: none;
+  margin-bottom: 8px;
+  transition: color 0.2s;
+}
+
+.footer-col a:hover { color: var(--text-white); }
+
+.footer-bottom {
+  border-top: 0.5px solid var(--border-dark);
+  padding-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  color: rgba(255,255,255,0.12);
+}
+
+.footer-bottom a {
+  color: rgba(255,255,255,0.2);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer-bottom a:hover { color: var(--text-muted-dark); }
+
+/* ============================================================
+   UTILITY ANIMATIONS
+   ============================================================ */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(var(--y, 12px)); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   REDUCED MOTION
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .color-block { opacity: 1; transform: none; }
+  .scene * { opacity: 1; transform: none; transition: none; }
+  .flow-arrow { stroke-dashoffset: 0; }
+  .agent-line { stroke-dashoffset: 0; }
+}
+
+/* ============================================================
+   MOBILE
+   ============================================================ */
+@media (max-width: 768px) {
+  /* Nav */
+  .nav { padding: 14px 20px; }
+  .nav.scrolled { padding: 12px 20px; }
+  .nav-links { display: none; }
+  .nav-right { gap: 12px; }
+  .btn-nav { padding: 6px 12px; font-size: 10px; }
+
+  /* Hero */
+  .hero-landing { padding: 0 20px 40px; }
+  .hero-body { font-size: 15px; }
+  .hero-ctas { flex-direction: column; align-items: center; gap: 10px; }
+  .btn-primary, .btn-secondary { width: 100%; max-width: 260px; text-align: center; }
+  .hero-particles { display: block; }
+  .cursor-glow { display: none; }
+
+  /* Timeline */
+  .timeline-sticky { padding: 0 24px; }
+  .timeline-header { margin-bottom: 40px; }
+  .timeline-title { font-size: 22px; }
+  .timeline-item { width: 240px; margin-right: 16px; }
+  .timeline-year { font-size: 28px; }
+  .timeline-label { font-size: 14px; }
+  .timeline-desc { font-size: 12px; max-width: 220px; }
+  .timeline-counter { bottom: 24px; right: 24px; }
+
+  /* Scroll narrative scenes */
+  .scene { padding: 24px; }
+  .scene-headline { letter-spacing: -2px; }
+  .scene-1-headline { font-size: 64px !important; }
+  .scene-1-blocks { gap: 6px; }
+  .scene-3 { padding: 24px; }
+  .progress-dots { right: 16px; }
+
+  /* Protocol exchange blocks */
+  .flow-diagram { max-width: 100%; }
+  .flow-block-header { font-size: 9px; padding: 7px 12px; }
+  .flow-block-body { font-size: 10px; padding: 7px 12px 10px; }
+  .flow-block-dir { font-size: 8px; }
+
+  /* Macaroon */
+  .macaroon-layout { flex-direction: column; }
+  .macaroon-side { width: 100%; flex-direction: row; flex-wrap: wrap; gap: 12px; }
+  .mac-point { flex: 1; min-width: 140px; }
+  .macaroon-token { width: 100%; }
+
+  /* Agent properties */
+  .agent-prop { flex-direction: column; gap: 4px; }
+  .agent-prop-label { width: auto; }
+
+  /* White section */
+  .flow-bar { flex-direction: column; }
+  .flow-bar-step + .flow-bar-step { border-left: none; border-top: 0.5px solid rgba(0,0,0,0.06); }
+  .stats-section { padding: 48px 20px; }
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+  .stat-value { font-size: 28px; }
+  .stack-section { padding: 0 20px 64px; }
+  .stack-grid { grid-template-columns: 1fr; }
+  .stack-card-code { font-size: 10px; }
+
+  /* Purple section */
+  .purple-section { padding: 64px 20px; }
+  .purple-title { font-size: 32px; }
+  .purple-subtitle { font-size: 15px; }
+  .use-cases { grid-template-columns: 1fr; }
+  .terminal-wrap { margin-bottom: 48px; }
+  .terminal-body { font-size: 10px; padding: 14px 14px; min-height: 160px; }
+  .terminal-bar-title { font-size: 9px; }
+
+  /* Footer */
+  .footer { padding: 36px 20px 24px; }
+  .footer-top { flex-direction: column; gap: 32px; }
+  .footer-links { gap: 24px; flex-wrap: wrap; }
+  .footer-bottom { flex-direction: column; gap: 8px; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- Cursor glow that follows mouse -->
+<div class="cursor-glow" id="cursorGlow"></div>
+
+<!-- ============================================================
+     NAV
+     ============================================================ -->
+<nav class="nav" id="nav">
+  <div class="nav-left">
+    <a href="#" class="nav-logo" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M13 2L4.5 13.5H11.5L11 22L19.5 10.5H12.5L13 2Z"/></svg>
+      L402
+    </a>
+    <div class="nav-links">
+      <a href="#timeline">Timeline</a>
+      <a href="#protocol">Protocol</a>
+      <a href="#stack">Stack</a>
+      <a href="https://docs.lightning.engineering/the-lightning-network/l402">Docs</a>
+    </div>
+  </div>
+  <div class="nav-right">
+    <a href="https://github.com/lightninglabs/L402">GitHub</a>
+    <a href="https://docs.lightning.engineering/the-lightning-network/l402" class="btn-nav">Start building</a>
+  </div>
+</nav>
+
+<!-- ============================================================
+     HERO — L402 particle text as centerpiece
+     ============================================================ -->
+<section class="hero-landing">
+  <!-- Particle canvas — stays within this section only -->
+  <div class="hero-particles" id="particleLayer">
+    <canvas id="particles"></canvas>
+  </div>
+
+  <!-- Text content overlaid below the giant L402 -->
+  <div class="hero-landing-content">
+    <div class="hero-overline">The L402 Protocol</div>
+    <p class="hero-body">L402 is a standard to support the authentication and payment of services over the internet. Built with a focus on agentic commerce, optimized for machine-to-machine interaction. No accounts. No intermediaries.</p>
+    <div class="hero-ctas">
+      <a href="https://docs.lightning.engineering/the-lightning-network/l402" class="btn-primary">Read the spec</a>
+      <a href="https://github.com/lightninglabs/L402" class="btn-secondary">View on GitHub</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     TIMELINE — The origin story
+     ============================================================ -->
+<section class="timeline-section" id="timeline">
+  <div class="timeline-sticky">
+    <div class="timeline-header">
+      <div class="timeline-overline">The origin story</div>
+      <h2 class="timeline-title">From a forgotten status code <span class="dim">to the<br>payment layer for machines.</span></h2>
+    </div>
+
+    <div class="timeline-track-wrapper">
+      <div class="timeline-line"></div>
+      <div class="timeline-line-progress" id="lineProgress"></div>
+      <div class="timeline-track" id="tlTrack">
+        <div class="timeline-item active" data-index="0">
+          <div class="timeline-dot-wrap"><div class="timeline-dot" style="background:rgba(255,255,255,0.3)"></div></div>
+          <div class="timeline-year">1997</div>
+          <div class="timeline-label">HTTP 402 defined</div>
+          <div class="timeline-desc">RFC 2068 reserves status code 402 "Payment Required" for future use. No digital cash system exists yet. The code sits unused for decades.</div>
+          <div class="timeline-tag" style="color:rgba(255,255,255,0.25);border-color:rgba(255,255,255,0.06)">RFC 2068</div>
+        </div>
+        <div class="timeline-item" data-index="1">
+          <div class="timeline-dot-wrap"><div class="timeline-dot" style="background:var(--orange)"></div></div>
+          <div class="timeline-year">2009</div>
+          <div class="timeline-label">Bitcoin is born</div>
+          <div class="timeline-desc">The genesis block is mined. For the first time, a decentralized digital cash system exists natively on the internet. The prerequisite for HTTP 402 becomes real.</div>
+          <div class="timeline-tag" style="color:var(--orange);border-color:rgba(249,115,22,0.12)">Genesis block</div>
+        </div>
+        <div class="timeline-item" data-index="2">
+          <div class="timeline-dot-wrap"><div class="timeline-dot" style="background:var(--lime)"></div></div>
+          <div class="timeline-year">2018</div>
+          <div class="timeline-label">Lightning Network launches</div>
+          <div class="timeline-desc">Lightning goes live on Bitcoin mainnet. Instant micropayments at scale become possible. The infrastructure for a native payment protocol finally exists.</div>
+          <div class="timeline-tag" style="color:var(--lime);border-color:rgba(196,240,70,0.12)">Mainnet launch</div>
+        </div>
+        <div class="timeline-item" data-index="3">
+          <div class="timeline-dot-wrap"><div class="timeline-dot" style="background:var(--cyan)"></div></div>
+          <div class="timeline-year">2020</div>
+          <div class="timeline-label">LSAT specification published</div>
+          <div class="timeline-desc">Lightning Labs publishes the draft spec for Lightning Service Authentication Tokens and releases Aperture, the first L402-aware reverse proxy. Goes straight to production powering Lightning Loop.</div>
+          <div class="timeline-tag" style="color:var(--cyan);border-color:rgba(45,212,191,0.12)">Aperture + Loop</div>
+        </div>
+        <div class="timeline-item" data-index="4">
+          <div class="timeline-dot-wrap"><div class="timeline-dot" style="background:var(--violet)"></div></div>
+          <div class="timeline-year">2023</div>
+          <div class="timeline-label">LSAT becomes L402</div>
+          <div class="timeline-desc">The protocol is officially renamed from LSAT to L402 — directly referencing HTTP 402. Lightning Labs releases LangChain integration, giving AI agents the ability to traverse paid APIs over Lightning for the first time.</div>
+          <div class="timeline-tag" style="color:var(--violet);border-color:rgba(139,92,246,0.12)">AI + LangChain</div>
+        </div>
+        <div class="timeline-item" data-index="5">
+          <div class="timeline-dot-wrap"><div class="timeline-dot" style="background:var(--sky)"></div></div>
+          <div class="timeline-year">2025</div>
+          <div class="timeline-label">Production at scale</div>
+          <div class="timeline-desc">L402 runs in production across Lightning Loop, Pool, and Aperture. The formal protocol specification is published on GitHub. An ecosystem of L402-powered services begins to take shape.</div>
+          <div class="timeline-tag" style="color:var(--sky);border-color:rgba(56,189,248,0.12)">Formal spec</div>
+        </div>
+        <div class="timeline-item" data-index="6">
+          <div class="timeline-dot-wrap"><div class="timeline-dot" style="background:var(--cyan)"></div></div>
+          <div class="timeline-year">2026</div>
+          <div class="timeline-label">Agents transact autonomously</div>
+          <div class="timeline-desc">Lightning Labs launches lnget and Lightning Agent Tools — seven composable skills covering the full agent commerce stack. AI agents discover, pay for, and earn from services with real sats on mainnet.</div>
+          <div class="timeline-tag" style="color:var(--cyan);border-color:rgba(45,212,191,0.12)">lnget + Agent Tools</div>
+        </div>
+        <div class="timeline-item future" data-index="7">
+          <div class="timeline-dot-wrap"><div class="timeline-dot"></div></div>
+          <div class="timeline-year">What's next</div>
+          <div class="timeline-label">The Agentic Economy</div>
+          <div class="timeline-desc">Billions of autonomous agents discovering, consuming, and selling services over L402. No accounts. No API keys. No gatekeepers. Machine-readable credentials, instant settlement, stateless verification — a global economy where software pays software at the speed of light.</div>
+          <div class="timeline-tag" style="color:var(--violet);border-color:rgba(139,92,246,0.12)">L402 native</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="timeline-counter" id="tlCounter"><span class="c">1</span> / 8</div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SCROLL NARRATIVE — 4 SCENES
+     ============================================================ -->
+<section class="hero-scroll" id="protocol">
+  <div class="hero-sticky">
+
+    <!-- Progress dots — now 4 -->
+    <div class="progress-dots">
+      <div class="progress-dot" data-scene="1"></div>
+      <div class="progress-dot" data-scene="2"></div>
+      <div class="progress-dot" data-scene="3"></div>
+      <div class="progress-dot" data-scene="4"></div>
+    </div>
+
+    <!-- SCENE 1: L402 — The Solution -->
+    <div class="scene scene-1" id="scene-1">
+      <div class="scene-overline">Lightning HTTP 402 Protocol</div>
+      <h2 class="scene-headline scene-1-headline">L402</h2>
+      <div class="scene-1-line"></div>
+      <div class="scene-body">A standard to facilitate the authentication and trade of services such as API endpoints and computational resources. Built with a focus on agentic commerce — all aspects of the stack optimized for interaction between AI agents.</div>
+      <div class="scene-1-blocks">
+        <i style="background:var(--cyan)"></i>
+        <i style="background:var(--lime)"></i>
+        <i style="background:var(--violet)"></i>
+        <i style="background:var(--orange)"></i>
+        <i style="background:var(--sky)"></i>
+      </div>
+    </div>
+
+    <!-- SCENE 2: The Flow -->
+    <div class="scene scene-3" id="scene-2" data-step="0">
+      <div class="scene-overline">The protocol</div>
+      <h2 class="scene-headline">One round-trip.</h2>
+
+      <div class="flow-diagram">
+        <div class="flow-exchange">
+
+          <div class="flow-block flow-block-1">
+            <div class="flow-block-header">
+              <span><span class="hl">GET</span> /api/v2/forecast</span>
+              <span class="flow-block-dir">→ request</span>
+            </div>
+          </div>
+
+          <div class="flow-block flow-block-2">
+            <div class="flow-block-header">
+              <span><span class="hl">402</span> Payment Required</span>
+              <span class="flow-block-dir">← response</span>
+            </div>
+            <div class="flow-block-body">
+              WWW-Authenticate: L402<br>
+              macaroon=<span class="hl">AGIAJEem...k90Cg==</span><br>
+              invoice=<span class="hl">lnbc500n1p...qqqvjq</span>
+            </div>
+          </div>
+
+          <div class="flow-block flow-block-3">
+            <div class="flow-block-header">
+              <span>⚡ Lightning payment</span>
+              <span class="flow-block-dir">48ms</span>
+            </div>
+            <div class="flow-block-body">
+              preimage=<span class="hl">a]1234abcd...preimage</span><br>
+              amount=<span class="hl">50 sats</span>
+            </div>
+          </div>
+
+          <div class="flow-block flow-block-4">
+            <div class="flow-block-header">
+              <span><span class="hl">200</span> OK — Access granted</span>
+              <span class="flow-block-dir">← response</span>
+            </div>
+            <div class="flow-block-body">
+              Authorization: L402 <span class="hl">macaroon:preimage</span><br>
+              Verification: <span class="hl">stateless ✓</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="flow-summary">
+        <span class="active" data-for="0"></span>
+        <span data-for="1">Client sends a standard HTTP request to a protected resource.</span>
+        <span data-for="2">Server responds with 402 and a WWW-Authenticate header containing a macaroon and a Lightning invoice.</span>
+        <span data-for="3">Client pays the invoice over Lightning. Settlement in ~50ms. The preimage is cryptographic proof of payment.</span>
+        <span data-for="4">Client re-sends the request with macaroon + preimage. Stateless API authentication — no database, no session, no intermediary. Just math.</span>
+      </div>
+    </div>
+
+    <!-- SCENE 3: The Macaroon -->
+    <div class="scene scene-4" id="scene-3">
+      <div class="scene-overline">Bearer credential</div>
+      <h2 class="scene-headline scene-4-headline">Not a cookie. A macaroon.</h2>
+
+      <div class="macaroon-layout">
+        <!-- Left: actual macaroon token with real caveats -->
+        <div class="macaroon-token">
+          <div class="macaroon-header">
+            <span><b>L402 macaroon</b></span>
+            <span>HMAC-chain bearer token</span>
+          </div>
+          <div class="caveat">
+            <div class="caveat-dot" style="background:var(--cyan)"></div>
+            <span class="caveat-key">services</span>
+            <span class="caveat-value">lightning_loop:0</span>
+          </div>
+          <div class="caveat">
+            <div class="caveat-dot" style="background:var(--lime)"></div>
+            <span class="caveat-key">capabilities</span>
+            <span class="caveat-value">loop_out,loop_in</span>
+          </div>
+          <div class="caveat">
+            <div class="caveat-dot" style="background:var(--violet)"></div>
+            <span class="caveat-key">monthly_volume</span>
+            <span class="caveat-value">200000000 sats</span>
+          </div>
+          <div class="caveat">
+            <div class="caveat-dot" style="background:var(--orange)"></div>
+            <span class="caveat-key">payment_hash</span>
+            <span class="caveat-value">163102a9c88f...7bea</span>
+          </div>
+          <div class="caveat">
+            <div class="caveat-dot" style="background:var(--sky)"></div>
+            <span class="caveat-key">user_id</span>
+            <span class="caveat-value">fed74b3ef248...1013</span>
+          </div>
+          <div class="macaroon-sig">HMAC(HMAC(secret, identifier), caveats...)</div>
+        </div>
+
+        <!-- Right: why this matters -->
+        <div class="macaroon-side">
+          <div class="mac-point">
+            <div class="mac-point-label" style="color:var(--cyan)">Verify</div>
+            <div class="mac-point-text">Stateless API authentication. Only needs the root key. No database, no session store, no intermediary.</div>
+          </div>
+          <div class="mac-point">
+            <div class="mac-point-label" style="color:var(--lime)">Attenuate</div>
+            <div class="mac-point-text">Anyone can add caveats to restrict scope. Can't remove them. Permissions only narrow. A credential delegation protocol built in.</div>
+          </div>
+          <div class="mac-point">
+            <div class="mac-point-label" style="color:var(--violet)">Delegate</div>
+            <div class="mac-point-text">Pass to another agent with tighter scope. Privacy-preserving — no identity revealed, no tracking, no personal data.</div>
+          </div>
+          <div class="mac-point">
+            <div class="mac-point-label" style="color:var(--orange)">Pay-to-complete</div>
+            <div class="mac-point-text">The payment hash binds the macaroon to a Lightning invoice. Pay to activate. Censorship-resistant — no one can revoke your payment.</div>
+          </div>
+        </div>
+      </div>
+
+      <a href="https://docs.lightning.engineering/the-lightning-network/l402/macaroons" class="macaroon-docs">Read the macaroon spec →</a>
+    </div>
+
+    <!-- SCENE 4: Agent-Native -->
+    <div class="scene scene-5" id="scene-4">
+      <div class="scene-overline">Agent-native</div>
+      <h2 class="scene-headline scene-5-headline">Built for machines.</h2>
+
+      <div class="agent-props">
+        <div class="agent-prop">
+          <span class="agent-prop-label" style="color:var(--cyan)">Credentials</span>
+          <span class="agent-prop-value">Machine-readable bearer tokens. Structured HTTP headers, not browser cookies.</span>
+        </div>
+        <div class="agent-prop">
+          <span class="agent-prop-label" style="color:var(--lime)">Discovery</span>
+          <span class="agent-prop-value">Hit a 402, get an invoice. Programmable payments — no docs to read, no keys to request.</span>
+        </div>
+        <div class="agent-prop">
+          <span class="agent-prop-label" style="color:var(--violet)">Delegation</span>
+          <span class="agent-prop-value">Credential delegation via caveat attenuation. Pass scoped access between agents. No central authority.</span>
+        </div>
+        <div class="agent-prop">
+          <span class="agent-prop-label" style="color:var(--orange)">Spending</span>
+          <span class="agent-prop-value">Cap costs per-request or per-agent. Bake spending limits into the credential itself. Payment without intermediary.</span>
+        </div>
+        <div class="agent-prop">
+          <span class="agent-prop-label" style="color:var(--sky)">Security</span>
+          <span class="agent-prop-value">Remote signer isolates private keys. Censorship-resistant settlement. The agent never touches sensitive material.</span>
+        </div>
+      </div>
+
+      <div class="scene-5-tagline">No accounts. No OAuth. No human in the loop. The AI agent payments protocol — software paying for software, settled in milliseconds.</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================
+     PHASE 2 — WHITE SECTION
+     ============================================================ -->
+<section class="white-section" id="stack">
+
+  <!-- Flow bar — quick reference of the 4 steps -->
+  <div class="flow-bar">
+    <div class="flow-bar-step">
+      <div class="flow-bar-num">01</div>
+      <div class="flow-bar-label">Request</div>
+      <div class="flow-bar-desc">Client calls endpoint</div>
+    </div>
+    <div class="flow-bar-step">
+      <div class="flow-bar-num">02</div>
+      <div class="flow-bar-label">Challenge</div>
+      <div class="flow-bar-desc">402 + macaroon + invoice</div>
+    </div>
+    <div class="flow-bar-step">
+      <div class="flow-bar-num">03</div>
+      <div class="flow-bar-label">Pay</div>
+      <div class="flow-bar-desc">Lightning settles, preimage returned</div>
+    </div>
+    <div class="flow-bar-step">
+      <div class="flow-bar-num">04</div>
+      <div class="flow-bar-label">Access</div>
+      <div class="flow-bar-desc">Stateless verification, resource served</div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-section">
+    <div class="stats-row reveal-v">
+      <div class="stat-cell">
+        <div class="stat-value"><span>~50</span>ms</div>
+        <div class="stat-label">Settlement time</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-value"><span>1</span> sat</div>
+        <div class="stat-label">Minimum payment</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-value"><span>0</span></div>
+        <div class="stat-label">Accounts required</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-value"><span>Stateless</span></div>
+        <div class="stat-label">Verification</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stack cards -->
+  <div class="stack-section">
+    <div class="stack-header reveal-v">
+      <div class="stack-overline">The stack</div>
+      <div class="stack-title">Everything you need to deploy L402.</div>
+    </div>
+
+    <div class="stack-grid">
+      <div class="stack-card reveal-v">
+        <div class="stack-card-top">
+          <div class="stack-card-dot" style="background:#2DD4BF"></div>
+          <div class="stack-card-name">Aperture</div>
+        </div>
+        <div class="stack-card-type">L402 reverse proxy</div>
+        <div class="stack-card-desc">A reverse proxy that acts as a decentralized API payment and authentication gateway. Implements both the L402 and MPP specifications. Handles gRPC over HTTP/2 and REST over HTTP/1. Verifies credentials and forwards valid requests, or issues macaroons with Lightning invoices. Supports dynamic pricing per request. Used in production by Lightning Loop and Pool.</div>
+        <div class="stack-card-code"><span class="code-text">git clone https://github.com/lightninglabs/aperture.git && make install</span><button class="copy-btn" onclick="copyCode(this)" title="Copy"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button></div>
+        <div class="stack-card-links">
+          <a href="https://github.com/lightninglabs/aperture">GitHub</a>
+          <a href="https://docs.lightning.engineering/lightning-network-tools/aperture/get-aperture">Docs</a>
+        </div>
+      </div>
+
+      <div class="stack-card reveal-v">
+        <div class="stack-card-top">
+          <div class="stack-card-dot" style="background:#C4F046"></div>
+          <div class="stack-card-name">lnget</div>
+        </div>
+        <div class="stack-card-type">L402-aware HTTP client</div>
+        <div class="stack-card-desc">A command-line HTTP client like wget or curl, designed for programmatic access to paid APIs. When it hits a 402 response, it automatically pays the Lightning invoice, caches the token, and retries with the proper Authorization header. Supports LND, LNC, and regtest backends.</div>
+        <div class="stack-card-code"><span class="code-text">lnget https://api.example.com/data</span><button class="copy-btn" onclick="copyCode(this)" title="Copy"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button></div>
+        <div class="stack-card-links">
+          <a href="https://github.com/lightninglabs/lnget">GitHub</a>
+          <a href="https://lightning.engineering/posts/2026-02-11-ln-agent-tools/">Blog post</a>
+        </div>
+      </div>
+
+      <div class="stack-card reveal-v">
+        <div class="stack-card-top">
+          <div class="stack-card-dot" style="background:#8B5CF6"></div>
+          <div class="stack-card-name">Lightning Agent Tools</div>
+        </div>
+        <div class="stack-card-type">AI agent toolkit</div>
+        <div class="stack-card-desc">Seven composable skills for the full agent commerce stack: running a Lightning node, isolating keys with a remote signer, baking scoped macaroons, paying L402 APIs, hosting paid endpoints, and querying node state via MCP. Built for agents that transact autonomously.</div>
+        <div class="stack-card-code"><span class="code-text">Install Lightning Agent Tools and set up a Lightning node with remote signer</span><button class="copy-btn" onclick="copyCode(this)" title="Copy"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button></div>
+        <div class="stack-card-links">
+          <a href="https://github.com/lightninglabs/lightning-agent-tools">GitHub</a>
+          <a href="https://lightning.engineering/posts/2026-02-11-ln-agent-tools/">Blog post</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<section class="purple-section" id="agents">
+
+  <div class="purple-header">
+    <div class="purple-overline">Agent-ready infrastructure</div>
+    <h2 class="purple-title">Ready for agents.</h2>
+    <p class="purple-subtitle">L402 gives autonomous software a native way to discover, pay for, and authenticate with any service. Private machine payments, settled in milliseconds. No accounts, no intermediaries, no human in the loop.</p>
+  </div>
+
+  <!-- Terminal demo — agent paying for an API -->
+  <div class="terminal-wrap" id="terminalDemo">
+    <div class="terminal-bar">
+      <div class="terminal-dot"></div>
+      <div class="terminal-dot"></div>
+      <div class="terminal-dot"></div>
+      <span class="terminal-bar-title">agent — lnget</span>
+    </div>
+    <div class="terminal-body">
+      <div class="terminal-line" data-delay="0"><span class="terminal-comment"># Agent discovers a paid API</span></div>
+      <div class="terminal-line" data-delay="1"><span class="terminal-prompt">$ </span><span class="terminal-cmd">lnget</span> <span class="terminal-url">https://api.weather.com/v2/forecast</span></div>
+      <div class="terminal-line" data-delay="2"><span class="terminal-comment"># Server returns 402 Payment Required</span></div>
+      <div class="terminal-line" data-delay="3">⚡ Invoice: <span class="terminal-value">50 sats</span> — paying automatically...</div>
+      <div class="terminal-line" data-delay="4">✓ <span class="terminal-success">Payment settled in 48ms</span></div>
+      <div class="terminal-line" data-delay="5">✓ <span class="terminal-success">L402 token cached for api.weather.com</span></div>
+      <div class="terminal-line" data-delay="6"><span class="terminal-comment"># Subsequent requests reuse the token — no re-payment</span></div>
+      <div class="terminal-line" data-delay="7"><span class="terminal-prompt">$ </span><span class="terminal-cmd">lnget</span> <span class="terminal-url">https://api.weather.com/v2/history</span></div>
+      <div class="terminal-line" data-delay="8">✓ <span class="terminal-success">200 OK — authenticated via cached L402</span></div>
+    </div>
+  </div>
+
+  <!-- Use cases -->
+  <div class="use-cases">
+    <div class="use-case">
+      <div class="use-case-num">01</div>
+      <div class="use-case-title">Pay-per-request APIs</div>
+      <div class="use-case-desc">Turn any API into a metered, pay-per-call service with Aperture. Agents pay per request with Lightning micropayments — no subscription, no billing integration, no signup. Dynamic pricing based on query complexity. Decentralized API payments at scale.</div>
+    </div>
+    <div class="use-case">
+      <div class="use-case-num">02</div>
+      <div class="use-case-title">Machine-to-machine commerce</div>
+      <div class="use-case-desc">One agent hosts a paid service, another consumes it. lnget on the client side, Aperture on the server side. Software paying for software — the full commerce loop runs without humans, without intermediaries, settled on Lightning.</div>
+    </div>
+    <div class="use-case">
+      <div class="use-case-num">03</div>
+      <div class="use-case-title">Privacy-preserving credentials</div>
+      <div class="use-case-desc">Bake pay-only macaroons with spending limits. Delegate sub-credentials via caveat attenuation. Censorship-resistant settlement. Key isolation via remote signer. No identity required — private machine payments by default.</div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="purple-cta">
+    <p class="purple-cta-text">The agentic payments protocol. Works with OpenClaw, Claude Code, Codex, or any framework that can run a shell command.</p>
+    <a href="https://github.com/lightninglabs/lightning-agent-tools" class="btn-purple">Get the Agent Tools</a>
+  </div>
+
+</section>
+
+<footer class="footer">
+  <div class="footer-top">
+    <div>
+      <div class="footer-brand">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M13 2L4.5 13.5H11.5L11 22L19.5 10.5H12.5L13 2Z" fill="#fff"/></svg>
+        L402
+      </div>
+      <div class="footer-tagline">L402 is a standard to support the authentication and payment of services over the internet. Built with a focus on agentic commerce. Privacy-preserving, programmable, censorship-resistant.</div>
+    </div>
+
+    <div class="footer-links">
+      <div class="footer-col">
+        <div class="footer-col-title">Protocol</div>
+        <a href="https://github.com/lightninglabs/L402">Specification</a>
+        <a href="https://docs.lightning.engineering/the-lightning-network/l402">Documentation</a>
+        <a href="https://github.com/lightninglabs/L402/blob/master/protocol-specification.md">Technical spec</a>
+        <a href="/llms.txt">llms.txt</a>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Tools</div>
+        <a href="https://github.com/lightninglabs/aperture">Aperture</a>
+        <a href="https://github.com/lightninglabs/lnget">lnget</a>
+        <a href="https://github.com/lightninglabs/lightning-agent-tools">Agent Tools</a>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Lightning Labs</div>
+        <a href="https://lightning.engineering">Website</a>
+        <a href="https://lightning.engineering/blog">Blog</a>
+        <a href="https://github.com/lightninglabs">GitHub</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <span>L402 is an open protocol. <a href="https://github.com/lightninglabs/L402/blob/master/LICENSE">MIT License</a></span>
+    <span>Built by <a href="https://lightning.engineering">Lightning Labs</a></span>
+  </div>
+</footer>
+
+<!-- ============================================================
+     JAVASCRIPT — Scroll Engine
+     ============================================================ -->
+<script>
+(function() {
+  'use strict';
+
+  // Copy code to clipboard
+  function copyCode(btn) {
+    var text = btn.parentElement.querySelector('.code-text').textContent;
+    navigator.clipboard.writeText(text).then(function() {
+      btn.classList.add('copied');
+      // Swap icon to checkmark
+      btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>';
+      setTimeout(function() {
+        btn.classList.remove('copied');
+        btn.innerHTML = '<svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>';
+      }, 2000);
+    });
+  }
+  // Make it global so onclick works
+  window.copyCode = copyCode;
+
+  // NAV scroll state
+  const nav = document.getElementById('nav');
+  let lastScroll = 0;
+
+  // HERO SCROLL NARRATIVE
+  const heroScroll = document.querySelector('.hero-scroll');
+  const scenes = document.querySelectorAll('.scene');
+  const dots = document.querySelectorAll('.progress-dot');
+  const scene2 = document.getElementById('scene-2');
+  const flowTexts = document.querySelectorAll('.flow-summary span');
+
+  // Scene boundaries — 4 scenes now (no more HTTP 402 scene)
+  const sceneBounds = [
+    { start: 0,  end: 25 },  // Scene 1: L402
+    { start: 25, end: 60 },  // Scene 2: How it works (longer — 4 sub-steps)
+    { start: 60, end: 80 },  // Scene 3: Macaroon
+    { start: 80, end: 100 }, // Scene 4: Agent-native
+  ];
+
+  // Scene 2 sub-steps (the flow)
+  const scene2Steps = [
+    { start: 25, end: 34 },
+    { start: 34, end: 43 },
+    { start: 43, end: 52 },
+    { start: 52, end: 60 },
+  ];
+
+  let activeScene = -1;
+  let ticking = false;
+
+  function getScrollPercent() {
+    const rect = heroScroll.getBoundingClientRect();
+    const scrollTop = -rect.top;
+    const scrollHeight = heroScroll.offsetHeight - window.innerHeight;
+    return Math.max(0, Math.min(100, (scrollTop / scrollHeight) * 100));
+  }
+
+  // ============================================================
+  // TIMELINE — horizontal scroll engine
+  // ============================================================
+  var tlSection = document.getElementById('timeline');
+  var tlTrack = document.getElementById('tlTrack');
+  var tlProgress = document.getElementById('lineProgress');
+  var tlCounter = document.getElementById('tlCounter');
+  var tlItems = document.querySelectorAll('.timeline-item');
+  var tlTotal = tlItems.length;
+
+  function updateTimeline() {
+    if (!tlSection) return;
+    var rect = tlSection.getBoundingClientRect();
+    var scrollTop = -rect.top;
+    var scrollH = tlSection.offsetHeight - window.innerHeight;
+    var pct = Math.max(0, Math.min(1, scrollTop / scrollH));
+
+    var itemW = window.innerWidth <= 768 ? 256 : 324;
+    var pad = window.innerWidth <= 768 ? 24 : 64;
+    var activeIdx = Math.min(tlTotal - 1, Math.floor(pct * tlTotal));
+
+    var totalW = tlTotal * itemW;
+    var viewW = window.innerWidth - pad * 2;
+    var maxOff = Math.max(0, totalW - viewW);
+    tlTrack.style.transform = 'translateX(' + (-pct * maxOff) + 'px)';
+    tlProgress.style.width = (pct * 100) + '%';
+
+    for (var i = 0; i < tlTotal; i++) {
+      tlItems[i].classList.remove('active', 'past');
+      if (i === activeIdx) tlItems[i].classList.add('active');
+      else if (i < activeIdx) tlItems[i].classList.add('past');
+    }
+
+    tlCounter.innerHTML = '<span class="c">' + (activeIdx + 1) + '</span> / ' + tlTotal;
+  }
+
+  function updateScenes() {
+    const pct = getScrollPercent();
+    const scrollY = window.scrollY;
+
+    // Nav state
+    if (scrollY > 60) {
+      nav.classList.add('scrolled');
+    } else {
+      nav.classList.remove('scrolled');
+    }
+
+    // Particle entropy
+    const heroHeight = window.innerHeight;
+    const maxEntropyScroll = heroHeight * 1.5;
+    let entropy = 0;
+
+    if (scrollY <= 0) {
+      entropy = 0;
+    } else if (scrollY >= maxEntropyScroll) {
+      entropy = 0.2;
+    } else {
+      entropy = (scrollY / maxEntropyScroll) * 0.2;
+    }
+
+    window.__l402entropy = entropy;
+
+    // Timeline
+    updateTimeline();
+
+    // Determine active scene
+    let newScene = -1;
+    for (let i = 0; i < sceneBounds.length; i++) {
+      if (pct >= sceneBounds[i].start && pct < sceneBounds[i].end) {
+        newScene = i;
+        break;
+      }
+    }
+    if (pct >= sceneBounds[3].start) newScene = 3;
+
+    // Check if we're in the hero-scroll viewport range
+    const heroRect = heroScroll.getBoundingClientRect();
+    const inView = heroRect.top < window.innerHeight && heroRect.bottom > 0;
+
+    // Update scenes — works both directions
+    if (inView && newScene >= 0 && newScene !== activeScene) {
+      scenes.forEach(function(s) { s.classList.remove('active'); });
+      dots.forEach(function(d) { d.classList.remove('active'); });
+
+      scenes[newScene].classList.add('active');
+      dots[newScene].classList.add('active');
+      activeScene = newScene;
+    }
+
+    // Scene 2 sub-steps (the flow)
+    if (inView && newScene === 1) {
+      let step = 0;
+      for (let i = 0; i < scene2Steps.length; i++) {
+        if (pct >= scene2Steps[i].start) step = i + 1;
+      }
+      scene2.setAttribute('data-step', step);
+
+      flowTexts.forEach(function(t) { t.classList.remove('active'); });
+      var activeText = document.querySelector('.flow-summary span[data-for="' + step + '"]');
+      if (activeText) activeText.classList.add('active');
+    } else if (inView && newScene !== 1) {
+      scene2.setAttribute('data-step', '0');
+      flowTexts.forEach(function(t) { t.classList.remove('active'); });
+    }
+
+    ticking = false;
+  }
+
+  function onScroll() {
+    if (!ticking) {
+      requestAnimationFrame(updateScenes);
+      ticking = true;
+    }
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  // Initial state
+  updateScenes();
+
+  // ============================================================
+  // TERMINAL ANIMATION — lines appear when section scrolls in
+  // ============================================================
+  var terminalDemo = document.getElementById('terminalDemo');
+  var terminalLines = terminalDemo ? terminalDemo.querySelectorAll('.terminal-line') : [];
+  var terminalTriggered = false;
+
+  function checkTerminal() {
+    if (terminalTriggered || !terminalDemo) return;
+    var rect = terminalDemo.getBoundingClientRect();
+    if (rect.top < window.innerHeight * 0.8) {
+      terminalTriggered = true;
+      for (var i = 0; i < terminalLines.length; i++) {
+        (function(line, delay) {
+          setTimeout(function() {
+            line.classList.add('visible');
+          }, delay * 300);
+        })(terminalLines[i], parseInt(terminalLines[i].getAttribute('data-delay')));
+      }
+    }
+  }
+
+  // Reset terminal on scroll up (so it replays)
+  function resetTerminal() {
+    if (!terminalTriggered || !terminalDemo) return;
+    var rect = terminalDemo.getBoundingClientRect();
+    if (rect.top > window.innerHeight) {
+      terminalTriggered = false;
+      for (var i = 0; i < terminalLines.length; i++) {
+        terminalLines[i].classList.remove('visible');
+      }
+    }
+  }
+
+  window.addEventListener('scroll', function() {
+    checkTerminal();
+    resetTerminal();
+  }, { passive: true });
+
+  checkTerminal();
+
+  // ============================================================
+  // CURSOR GLOW — follows mouse across the page
+  // ============================================================
+  const glow = document.getElementById('cursorGlow');
+  let glowX = 0, glowY = 0, currentX = 0, currentY = 0;
+
+  document.addEventListener('mousemove', function(e) {
+    glowX = e.clientX;
+    glowY = e.clientY;
+    glow.classList.add('visible');
+  });
+
+  document.addEventListener('mouseleave', function() {
+    glow.classList.remove('visible');
+  });
+
+  // Smooth follow with lerp
+  function animateGlow() {
+    currentX += (glowX - currentX) * 0.08;
+    currentY += (glowY - currentY) * 0.08;
+    glow.style.left = currentX + 'px';
+    glow.style.top = currentY + 'px';
+    requestAnimationFrame(animateGlow);
+  }
+  animateGlow();
+
+  // Disable on touch devices
+  if ('ontouchstart' in window) {
+    glow.style.display = 'none';
+  }
+
+  // ============================================================
+  // GIANT L402 — Particles form the text, lightning arcs between them
+  // Apple-style hero with interactive particle typography
+  // ============================================================
+  const canvas = document.getElementById('particles');
+  if (canvas && !('ontouchstart' in window)) {
+    const ctx = canvas.getContext('2d');
+    let W, H, mouseX = -999, mouseY = -999;
+    let textPoints = [], nodes = [], arcs = [];
+
+    const COLORS = ['#2DD4BF','#C4F046','#8B5CF6','#F97316','#38BDF8'];
+    function hexRgb(hex) {
+      return { r: parseInt(hex.slice(1,3),16), g: parseInt(hex.slice(3,5),16), b: parseInt(hex.slice(5,7),16) };
+    }
+
+    const DOT_SIZE = 2;
+    const MOUSE_RADIUS = 60;
+
+    function resize() {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      W = rect.width;
+      H = rect.height;
+      canvas.width = W * devicePixelRatio;
+      canvas.height = H * devicePixelRatio;
+      canvas.style.width = W + 'px';
+      canvas.style.height = H + 'px';
+      ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+    }
+
+    // Sample points from text rendered to an offscreen canvas
+    function sampleTextPoints() {
+      const offscreen = document.createElement('canvas');
+      const octx = offscreen.getContext('2d');
+      offscreen.width = W;
+      offscreen.height = H;
+
+      // Draw L402 large and centered, shifted up to leave room for content below
+      const fontSize = Math.min(W * 0.28, 260);
+      octx.font = '700 ' + fontSize + 'px "Instrument Sans", sans-serif';
+      octx.textAlign = 'center';
+      octx.textBaseline = 'middle';
+      octx.fillStyle = '#fff';
+      octx.fillText('L402', W / 2, H * 0.4);
+
+      // Sample pixels
+      const imageData = octx.getImageData(0, 0, W, H);
+      const data = imageData.data;
+      const points = [];
+      const gap = 6; // density of sampling
+
+      for (let y = 0; y < H; y += gap) {
+        for (let x = 0; x < W; x += gap) {
+          const i = (y * W + x) * 4;
+          if (data[i + 3] > 128) {
+            points.push({ x, y });
+          }
+        }
+      }
+      return points;
+    }
+
+    function createNodes() {
+      textPoints = sampleTextPoints();
+      nodes = [];
+      arcs = [];
+
+      for (let i = 0; i < textPoints.length; i++) {
+        const tp = textPoints[i];
+        const c = COLORS[Math.floor(Math.random() * COLORS.length)];
+        nodes.push({
+          tx: tp.x,
+          ty: tp.y,
+          x: tp.x,
+          y: tp.y,
+          vx: 0,
+          vy: 0,
+          color: c,
+          rgb: hexRgb(c),
+          fadeIn: 0.6 + Math.random() * 0.8,
+        });
+      }
+    }
+
+    // Jagged lightning path
+    function makeLightning(x1, y1, x2, y2, jitter) {
+      const pts = [{ x: x1, y: y1 }];
+      const segs = 3 + Math.floor(Math.random() * 3);
+      for (let i = 1; i < segs; i++) {
+        const t = i / segs;
+        pts.push({
+          x: x1 + (x2 - x1) * t + (Math.random() - 0.5) * jitter,
+          y: y1 + (y2 - y1) * t + (Math.random() - 0.5) * jitter,
+        });
+      }
+      pts.push({ x: x2, y: y2 });
+      return pts;
+    }
+
+    let frameCount = 0;
+    const FADE_DURATION = 80;
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+
+      // Only render when hero section is visible
+      const heroRect = canvas.parentElement.parentElement.getBoundingClientRect();
+      if (heroRect.bottom < 0 || heroRect.top > window.innerHeight) {
+        requestAnimationFrame(draw);
+        return;
+      }
+
+      frameCount++;
+
+      const mx = mouseX, my = mouseY;
+      const hasMouse = mx > -500;
+      const entropy = window.__l402entropy || 0;
+      const materialized = frameCount > FADE_DURATION;
+
+      // Update nodes
+      for (const n of nodes) {
+        const springStrength = 0.08 * (1 - entropy * 0.2);
+        n.vx += (n.tx - n.x) * springStrength;
+        n.vy += (n.ty - n.y) * springStrength;
+
+        if (entropy > 0.03 && materialized) {
+          const vibration = (entropy - 0.03) * 0.8;
+          n.vx += (Math.random() - 0.5) * vibration;
+          n.vy += (Math.random() - 0.5) * vibration;
+        }
+
+        if (hasMouse && materialized) {
+          const mdx = mx - n.x;
+          const mdy = my - n.y;
+          const md = Math.sqrt(mdx * mdx + mdy * mdy);
+          if (md < MOUSE_RADIUS && md > 0) {
+            const force = (1 - md / MOUSE_RADIUS) * 0.4;
+            n.vx += (mdx / md) * force;
+            n.vy += (mdy / md) * force;
+          }
+        }
+
+        n.vx *= 0.82;
+        n.vy *= 0.82;
+        n.x += n.vx;
+        n.y += n.vy;
+      }
+
+      // Lightning arcs — only scroll entropy, subtle ambient
+      if (materialized && entropy > 0.02) {
+        const arcSampleCount = 20 + Math.floor(entropy * 80);
+
+        for (let s = 0; s < arcSampleCount; s++) {
+          const i = Math.floor(Math.random() * nodes.length);
+          const j = Math.floor(Math.random() * nodes.length);
+          if (i === j) continue;
+
+          const a = nodes[i], b = nodes[j];
+          const dist = Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2);
+
+          if (dist < 50 && dist > 8 && Math.random() < 0.008 + entropy * 0.08) {
+            arcs.push({ pts: makeLightning(a.x, a.y, b.x, b.y, 5 + entropy * 4), life: 1, decay: 0.08 + Math.random() * 0.05, rgb: a.rgb });
+          }
+          if (dist >= 50 && dist < 120 && Math.random() < 0.001 + entropy * 0.02) {
+            arcs.push({ pts: makeLightning(a.x, a.y, b.x, b.y, 10 + entropy * 6), life: 1, decay: 0.05 + Math.random() * 0.03, rgb: a.rgb });
+          }
+          if (dist >= 120 && dist < 300 && entropy > 0.08 && Math.random() < entropy * 0.01) {
+            arcs.push({ pts: makeLightning(a.x, a.y, b.x, b.y, 18 + entropy * 8), life: 1, decay: 0.03 + Math.random() * 0.02, rgb: a.rgb });
+          }
+        }
+      }
+
+      // Cap arcs
+      const arcCap = 5 + Math.floor(entropy * 12);
+      if (arcs.length > arcCap) arcs.splice(0, arcs.length - arcCap);
+
+      // Draw arcs
+      for (let i = arcs.length - 1; i >= 0; i--) {
+        const arc = arcs[i];
+        arc.life -= arc.decay;
+        if (arc.life <= 0) { arcs.splice(i, 1); continue; }
+        const intensity = 0.45 + entropy * 0.15;
+        ctx.beginPath();
+        ctx.moveTo(arc.pts[0].x, arc.pts[0].y);
+        for (let j = 1; j < arc.pts.length; j++) ctx.lineTo(arc.pts[j].x, arc.pts[j].y);
+        ctx.strokeStyle = 'rgba(' + arc.rgb.r + ',' + arc.rgb.g + ',' + arc.rgb.b + ',' + (arc.life * intensity) + ')';
+        ctx.lineWidth = (1 + entropy * 0.4) * arc.life;
+        ctx.stroke();
+        ctx.strokeStyle = 'rgba(255,255,255,' + (arc.life * (0.15 + entropy * 0.08)) + ')';
+        ctx.lineWidth = 0.3;
+        ctx.stroke();
+      }
+
+      // Draw nodes — graceful fade-in per particle
+      for (const n of nodes) {
+        if (n.y > H + 100 || n.y < -100 || n.x < -100 || n.x > W + 100) continue;
+
+        // Each particle fades in at its own pace
+        const fadeProgress = Math.min(1, frameCount / (FADE_DURATION * n.fadeIn));
+        const alpha = fadeProgress;
+
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, DOT_SIZE, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(' + n.rgb.r + ',' + n.rgb.g + ',' + n.rgb.b + ',' + alpha + ')';
+        ctx.fill();
+      }
+
+      requestAnimationFrame(draw);
+    }
+
+    // Track mouse relative to the canvas position
+    document.addEventListener('mousemove', function(e) {
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      // Only active when mouse is actually over the hero canvas area
+      if (x >= 0 && x <= rect.width && y >= 0 && y <= rect.height) {
+        mouseX = x;
+        mouseY = y;
+      } else {
+        mouseX = -999;
+        mouseY = -999;
+      }
+    });
+
+    document.addEventListener('mouseleave', function() {
+      mouseX = -999;
+      mouseY = -999;
+    });
+
+    resize();
+    createNodes();
+    draw();
+    window.addEventListener('resize', function() {
+      resize();
+      createNodes();
+    });
+  }
+})();
+</script>
+
+</body>
+</html>

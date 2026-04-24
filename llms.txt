@@ -1,0 +1,82 @@
+# L402 Protocol
+
+> The HTTP 402 payment protocol for machine-to-machine commerce. Pay per API call with Lightning. Authenticate with cryptographic credentials. No accounts. No intermediaries.
+
+L402 is an open protocol for privacy-preserving, programmable payments over the internet using the Lightning Network. Developed by Lightning Labs, it activates the long-dormant HTTP 402 Payment Required status code by combining macaroons (cryptographic bearer token credentials) with Lightning Network micropayments. L402 is the AI agent payments protocol — purpose-built for software paying for software.
+
+## How it works
+
+1. Client sends a standard HTTP request to a protected resource
+2. Server responds with HTTP 402 Payment Required, including a macaroon and a Lightning invoice in the WWW-Authenticate header
+3. Client pays the invoice over Lightning Network (~50ms settlement). The preimage is cryptographic proof of payment
+4. Client re-sends the request with the macaroon and preimage in the Authorization header. Stateless API authentication — no database, no session, no intermediary. Just math.
+
+## Key properties
+
+- Settlement time: ~50ms
+- Minimum payment: 1 satoshi
+- Accounts required: 0
+- Verification: Stateless (no database lookup needed)
+- Privacy: No identity required. No tracking. Private machine payments by default
+- Censorship resistance: No intermediary can block or reverse a payment
+- Credentials: Machine-readable bearer tokens, self-contained, delegatable via caveat attenuation
+- Authentication scheme: `Authorization: L402 <base64-macaroon>:<hex-preimage>`
+
+## Why L402 matters for AI agents
+
+L402 is purpose-built for AI agents and autonomous software that need to discover, evaluate, and pay for services without human intervention. The credentials are machine-readable (structured HTTP headers), self-contained (no out-of-band registration or OAuth flows), and instantly obtainable (pay an invoice, get a credential, one HTTP round-trip). Agents can delegate scoped sub-credentials to other agents via caveat attenuation — a credential delegation protocol built into the token itself. No accounts, no API keys, no human in the loop. The agentic payments protocol for machine-to-machine commerce.
+
+## Macaroons — not cookies
+
+Macaroons are an advanced bearer token authentication mechanism for distributed systems. Unlike cookies, macaroons are cryptographically verifiable by the issuer without access to a central database. They can include their own permissions (caveats), be attenuated by the bearer to restrict scope, and be delegated to other agents. The payment hash binds the macaroon to a Lightning invoice — pay to activate. This makes L402 a privacy-preserving credential delegation protocol with censorship-resistant settlement.
+
+Real-world example (Lightning Loop macaroon):
+- services: lightning_loop:0
+- capabilities: loop_out, loop_in
+- monthly_volume: 200000000 sats
+- payment_hash: 163102a9c88f...7bea
+- Signature: HMAC(HMAC(secret, identifier), caveats...)
+
+Documentation: https://docs.lightning.engineering/the-lightning-network/l402/macaroons
+
+## History
+
+- 1997: HTTP 402 "Payment Required" defined in RFC 2068, reserved for future use
+- 2009: Bitcoin genesis block — first decentralized digital cash system
+- 2018: Lightning Network launches on Bitcoin mainnet — instant micropayments at scale
+- 2020: Lightning Labs publishes LSAT (Lightning Service Authentication Tokens) specification and releases Aperture, the first L402-aware reverse proxy. Production use in Lightning Loop
+- 2023: LSAT renamed to L402, directly referencing HTTP 402. LangChain integration released — AI agents traverse paid APIs over Lightning for the first time
+- 2025: Formal L402 specification published on GitHub. Production at scale across Loop, Pool, Aperture
+- 2026: Lightning Labs launches lnget CLI and Lightning Agent Tools — seven composable skills for the full agent commerce stack. AI agents make real payments with real sats on mainnet
+
+## Use cases
+
+1. Pay-per-request APIs: Turn any API into a metered, pay-per-call service with Aperture. Decentralized API payments — no subscription, no billing integration, no signup. Dynamic pricing per request.
+
+2. Machine-to-machine commerce: One agent hosts a paid service, another consumes it. lnget on the client side, Aperture on the server side. Software paying for software — the full commerce loop runs without humans, without intermediaries.
+
+3. Privacy-preserving credentials: Bake pay-only macaroons with spending limits. Delegate sub-credentials via caveat attenuation. Censorship-resistant settlement. No identity required — private machine payments by default.
+
+## Tools
+
+- Aperture: L402-aware reverse proxy and decentralized API payment gateway. Implements both the L402 and MPP specifications. Handles gRPC over HTTP/2 and REST over HTTP/1. Supports dynamic pricing per request. Install: `git clone https://github.com/lightninglabs/aperture.git && make install`
+
+- lnget: Command-line HTTP client with automatic L402 payment. Like wget/curl but handles pay-per-API-call payments transparently. Pays Lightning invoices on 402 responses, caches bearer tokens, retries. Install: `go install github.com/lightninglabs/lnget/cmd/lnget@latest`
+
+- Lightning Agent Tools: Seven composable skills for AI agents — node operations, remote signer for key isolation, scoped macaroon credentials, L402 API payments, paid endpoint hosting via Aperture, MCP server for node state queries. The agentic payments toolkit. Repository: github.com/lightninglabs/lightning-agent-tools
+
+## Links
+
+- Specification: https://github.com/lightninglabs/L402
+- Documentation: https://docs.lightning.engineering/the-lightning-network/l402
+- Macaroon spec: https://docs.lightning.engineering/the-lightning-network/l402/macaroons
+- Aperture: https://github.com/lightninglabs/aperture
+- lnget: https://github.com/lightninglabs/lnget
+- Agent Tools: https://github.com/lightninglabs/lightning-agent-tools
+- Lightning Labs: https://lightning.engineering
+- Blog — L402 for Agents: https://lightning.engineering/posts/2026-03-11-L402-for-agents/
+- Blog — Agent Tools launch: https://lightning.engineering/posts/2026-02-11-ln-agent-tools/
+
+## License
+
+MIT License — https://github.com/lightninglabs/L402/blob/master/LICENSE

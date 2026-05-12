@@ -8,12 +8,12 @@ L402 is an open protocol for privacy-preserving, programmable payments over the 
 
 1. Client sends a standard HTTP request to a protected resource
 2. Server responds with HTTP 402 Payment Required, including a macaroon and a Lightning invoice in the WWW-Authenticate header
-3. Client pays the invoice over Lightning Network (~50ms settlement). The preimage is cryptographic proof of payment
+3. Client pays the invoice over Lightning Network (settlement in under one second). The preimage is cryptographic proof of payment
 4. Client re-sends the request with the macaroon and preimage in the Authorization header. Stateless API authentication — no database, no session, no intermediary. Just math.
 
 ## Key properties
 
-- Settlement time: ~50ms
+- Settlement time: under 1 second
 - Minimum payment: 1 satoshi
 - Accounts required: 0
 - Verification: Stateless (no database lookup needed)
@@ -32,9 +32,10 @@ Macaroons are an advanced bearer token authentication mechanism for distributed 
 
 Real-world example (Lightning Loop macaroon):
 - services: lightning_loop:0
-- capabilities: loop_out, loop_in
-- monthly_volume: 200000000 sats
+- lightning_loop_capabilities: loop_out, loop_in
+- loop_out_monthly_volume_sats: 200000000
 - payment_hash: 163102a9c88f...7bea
+- user_id: fed74b3ef248...1013
 - Signature: HMAC(HMAC(secret, identifier), caveats...)
 
 Documentation: https://docs.lightning.engineering/the-lightning-network/l402/macaroons

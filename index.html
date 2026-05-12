@@ -522,13 +522,13 @@ body {
   flex-shrink: 0;
   width: 300px;
   margin-right: 24px;
-  opacity: 0.1;
-  transform: translateY(6px);
+  opacity: 0.4;
+  transform: translateY(0);
   transition: opacity 0.6s var(--ease-out-expo), transform 0.6s var(--ease-out-expo);
 }
 
-.timeline-item.active { opacity: 1; transform: translateY(0); }
-.timeline-item.past { opacity: 0.28; transform: translateY(0); }
+.timeline-item.active { opacity: 1; }
+.timeline-item.past { opacity: 0.5; }
 
 .timeline-dot-wrap { height: 10px; margin-bottom: 28px; position: relative; }
 
@@ -1086,6 +1086,13 @@ body {
   margin-top: 4px;
 }
 
+.stat-sub {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: rgba(0,0,0,0.2);
+  margin-top: 6px;
+}
+
 .stack-section { padding: 0 48px 96px; }
 
 .stack-header { text-align: center; margin-bottom: 40px; }
@@ -1117,6 +1124,8 @@ body {
   border-radius: 12px;
   padding: 28px 24px;
   transition: border-color 0.25s, transform 0.25s var(--ease-out-expo);
+  display: flex;
+  flex-direction: column;
 }
 
 .stack-card:hover {
@@ -1158,6 +1167,7 @@ body {
   color: rgba(0,0,0,0.5);
   line-height: 1.55;
   margin-bottom: 18px;
+  flex: 1;
 }
 
 .stack-card-code {
@@ -1171,6 +1181,7 @@ body {
   position: relative;
   word-break: break-all;
   line-height: 1.5;
+  margin-top: auto;
 }
 
 .copy-btn {
@@ -1244,6 +1255,155 @@ body {
 
 @supports not (animation-timeline: view()) {
   .reveal-v { opacity: 1; transform: none; }
+}
+
+/* ============================================================
+   L402 SDK — Standalone hero section
+   ============================================================ */
+.sdk-section {
+  background: var(--black);
+  padding: 96px 48px;
+  border-top: 0.5px solid var(--border-dark);
+}
+
+.sdk-inner {
+  max-width: 880px;
+  margin: 0 auto;
+}
+
+.sdk-overline {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--cyan);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+.sdk-title {
+  font-size: clamp(36px, 5vw, 52px);
+  font-weight: 700;
+  letter-spacing: -2px;
+  color: var(--text-white);
+  line-height: 1.1;
+  margin-bottom: 12px;
+}
+
+.sdk-subtitle {
+  font-size: 17px;
+  color: var(--text-muted-dark);
+  max-width: 540px;
+  line-height: 1.6;
+  margin-bottom: 48px;
+}
+
+.sdk-langs {
+  display: flex;
+  gap: 3px;
+  margin-bottom: 3px;
+}
+
+.sdk-lang-tab {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 8px 16px;
+  border-radius: 8px 8px 0 0;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  background: rgba(255,255,255,0.03);
+  color: var(--text-dim-dark);
+  border: 0.5px solid rgba(255,255,255,0.04);
+  border-bottom: none;
+}
+
+.sdk-lang-tab.active {
+  background: rgba(45,212,191,0.06);
+  color: var(--cyan);
+  border-color: rgba(45,212,191,0.12);
+}
+
+.sdk-lang-tab:hover:not(.active) {
+  background: rgba(255,255,255,0.05);
+  color: var(--text-muted-dark);
+}
+
+.sdk-code-panel {
+  display: none;
+  background: rgba(255,255,255,0.02);
+  border: 0.5px solid rgba(255,255,255,0.06);
+  border-radius: 0 8px 8px 8px;
+  padding: 20px 20px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.8;
+  color: rgba(255,255,255,0.5);
+  position: relative;
+}
+
+.sdk-code-panel.active { display: block; }
+
+.sdk-code-panel .hl { color: var(--cyan); }
+.sdk-code-panel .hl-lime { color: var(--lime); }
+.sdk-code-panel .hl-violet { color: var(--violet); }
+.sdk-code-panel .hl-dim { color: rgba(255,255,255,0.2); }
+
+.sdk-code-panel .copy-btn {
+  top: 10px;
+  right: 10px;
+}
+
+.sdk-features {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 40px;
+}
+
+.sdk-feature {
+  padding: 20px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.02);
+  border: 0.5px solid rgba(255,255,255,0.04);
+}
+
+.sdk-feature-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.sdk-feature-text {
+  font-size: 13px;
+  color: rgba(255,255,255,0.4);
+  line-height: 1.5;
+}
+
+.sdk-cta {
+  margin-top: 32px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.sdk-cta a {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--cyan);
+  text-decoration: none;
+  letter-spacing: 0.3px;
+  transition: color 0.2s;
+}
+
+.sdk-cta a:hover { color: var(--text-white); }
+
+@media (max-width: 768px) {
+  .sdk-section { padding: 64px 20px; }
+  .sdk-features { grid-template-columns: 1fr; }
+  .sdk-langs { overflow-x: auto; }
+  .sdk-code-panel { font-size: 10px; padding: 14px; }
+  .sdk-cta { flex-direction: column; align-items: flex-start; gap: 12px; }
 }
 
 /* ============================================================
@@ -1514,7 +1674,6 @@ body {
   .color-block { opacity: 1; transform: none; }
   .scene * { opacity: 1; transform: none; transition: none; }
   .flow-arrow { stroke-dashoffset: 0; }
-  .agent-line { stroke-dashoffset: 0; }
 }
 
 /* ============================================================
@@ -1615,6 +1774,7 @@ body {
       <a href="#timeline">Timeline</a>
       <a href="#protocol">Protocol</a>
       <a href="#stack">Stack</a>
+      <a href="#sdk">SDK</a>
       <a href="https://docs.lightning.engineering/the-lightning-network/l402">Docs</a>
     </div>
   </div>
@@ -1740,7 +1900,7 @@ body {
       <div class="scene-overline">Lightning HTTP 402 Protocol</div>
       <h2 class="scene-headline scene-1-headline">L402</h2>
       <div class="scene-1-line"></div>
-      <div class="scene-body">A standard to facilitate the authentication and trade of services such as API endpoints and computational resources. Built with a focus on agentic commerce — all aspects of the stack optimized for interaction between AI agents.</div>
+      <div class="scene-body">A standard for authentication and payment of API services over Lightning. Built for agentic commerce.</div>
       <div class="scene-1-blocks">
         <i style="background:var(--cyan)"></i>
         <i style="background:var(--lime)"></i>
@@ -1780,7 +1940,7 @@ body {
           <div class="flow-block flow-block-3">
             <div class="flow-block-header">
               <span>⚡ Lightning payment</span>
-              <span class="flow-block-dir">48ms</span>
+              <span class="flow-block-dir">&lt;1s</span>
             </div>
             <div class="flow-block-body">
               preimage=<span class="hl">a]1234abcd...preimage</span><br>
@@ -1806,22 +1966,23 @@ body {
         <span class="active" data-for="0"></span>
         <span data-for="1">Client sends a standard HTTP request to a protected resource.</span>
         <span data-for="2">Server responds with 402 and a WWW-Authenticate header containing a macaroon and a Lightning invoice.</span>
-        <span data-for="3">Client pays the invoice over Lightning. Settlement in ~50ms. The preimage is cryptographic proof of payment.</span>
+        <span data-for="3">Client pays the invoice over Lightning. Settlement in less than one second. The preimage is cryptographic proof of payment.</span>
         <span data-for="4">Client re-sends the request with macaroon + preimage. Stateless API authentication — no database, no session, no intermediary. Just math.</span>
       </div>
     </div>
 
     <!-- SCENE 3: The Macaroon -->
     <div class="scene scene-4" id="scene-3">
-      <div class="scene-overline">Bearer credential</div>
+      <div class="scene-overline">Default credential format</div>
       <h2 class="scene-headline scene-4-headline">Not a cookie. A macaroon.</h2>
+      <p class="scene-body" style="margin-bottom:36px;">A cryptographic API key for distributed systems. Validated by the issuer without a central database. Permissions embedded. Holders can add their own restrictions.</p>
 
       <div class="macaroon-layout">
         <!-- Left: actual macaroon token with real caveats -->
         <div class="macaroon-token">
           <div class="macaroon-header">
             <span><b>L402 macaroon</b></span>
-            <span>HMAC-chain bearer token</span>
+            <span>Lightning Loop — production</span>
           </div>
           <div class="caveat">
             <div class="caveat-dot" style="background:var(--cyan)"></div>
@@ -1830,13 +1991,13 @@ body {
           </div>
           <div class="caveat">
             <div class="caveat-dot" style="background:var(--lime)"></div>
-            <span class="caveat-key">capabilities</span>
+            <span class="caveat-key">lightning_loop_capabilities</span>
             <span class="caveat-value">loop_out,loop_in</span>
           </div>
           <div class="caveat">
             <div class="caveat-dot" style="background:var(--violet)"></div>
-            <span class="caveat-key">monthly_volume</span>
-            <span class="caveat-value">200000000 sats</span>
+            <span class="caveat-key">loop_out_monthly_volume_sats</span>
+            <span class="caveat-value">200000000</span>
           </div>
           <div class="caveat">
             <div class="caveat-dot" style="background:var(--orange)"></div>
@@ -1848,26 +2009,26 @@ body {
             <span class="caveat-key">user_id</span>
             <span class="caveat-value">fed74b3ef248...1013</span>
           </div>
-          <div class="macaroon-sig">HMAC(HMAC(secret, identifier), caveats...)</div>
+          <div class="macaroon-sig">HMAC(HMAC(secret, identifier), caveats...) → verify with root key only</div>
         </div>
 
         <!-- Right: why this matters -->
         <div class="macaroon-side">
           <div class="mac-point">
             <div class="mac-point-label" style="color:var(--cyan)">Verify</div>
-            <div class="mac-point-text">Stateless API authentication. Only needs the root key. No database, no session store, no intermediary.</div>
+            <div class="mac-point-text">Validated cryptographically by the issuer. No access to a central database required — only the root key.</div>
           </div>
           <div class="mac-point">
-            <div class="mac-point-label" style="color:var(--lime)">Attenuate</div>
-            <div class="mac-point-text">Anyone can add caveats to restrict scope. Can't remove them. Permissions only narrow. A credential delegation protocol built in.</div>
+            <div class="mac-point-label" style="color:var(--lime)">Permissions</div>
+            <div class="mac-point-text">Macaroons can include their own permissions. The API endpoint reads them, verifies the signature, and executes accordingly.</div>
           </div>
           <div class="mac-point">
-            <div class="mac-point-label" style="color:var(--violet)">Delegate</div>
-            <div class="mac-point-text">Pass to another agent with tighter scope. Privacy-preserving — no identity revealed, no tracking, no personal data.</div>
+            <div class="mac-point-label" style="color:var(--violet)">Attenuate</div>
+            <div class="mac-point-text">Macaroons can be attenuated by the bearer with further restrictions. This allows delegating permissions safely.</div>
           </div>
           <div class="mac-point">
             <div class="mac-point-label" style="color:var(--orange)">Pay-to-complete</div>
-            <div class="mac-point-text">The payment hash binds the macaroon to a Lightning invoice. Pay to activate. Censorship-resistant — no one can revoke your payment.</div>
+            <div class="mac-point-text">L402 macaroons include a third-party caveat — a Lightning invoice. The macaroon is only complete upon payment.</div>
           </div>
         </div>
       </div>
@@ -1903,7 +2064,7 @@ body {
         </div>
       </div>
 
-      <div class="scene-5-tagline">No accounts. No OAuth. No human in the loop. The AI agent payments protocol — software paying for software, settled in milliseconds.</div>
+      <div class="scene-5-tagline">No accounts. No OAuth. No human in the loop. The AI agent payments protocol — software paying for software, settled in under a second.</div>
     </div>
 
   </div>
@@ -1942,12 +2103,13 @@ body {
   <div class="stats-section">
     <div class="stats-row reveal-v">
       <div class="stat-cell">
-        <div class="stat-value"><span>~50</span>ms</div>
-        <div class="stat-label">Settlement time</div>
+        <div class="stat-value"><span>&lt; 1s</span></div>
+        <div class="stat-label">Settlement</div>
       </div>
       <div class="stat-cell">
         <div class="stat-value"><span>1</span> sat</div>
         <div class="stat-label">Minimum payment</div>
+        <div class="stat-sub">≈ $0.001 · payments at any scale</div>
       </div>
       <div class="stat-cell">
         <div class="stat-value"><span>0</span></div>
@@ -1975,7 +2137,7 @@ body {
         </div>
         <div class="stack-card-type">L402 reverse proxy</div>
         <div class="stack-card-desc">A reverse proxy that acts as a decentralized API payment and authentication gateway. Implements both the L402 and MPP specifications. Handles gRPC over HTTP/2 and REST over HTTP/1. Verifies credentials and forwards valid requests, or issues macaroons with Lightning invoices. Supports dynamic pricing per request. Used in production by Lightning Loop and Pool.</div>
-        <div class="stack-card-code"><span class="code-text">git clone https://github.com/lightninglabs/aperture.git && make install</span><button class="copy-btn" onclick="copyCode(this)" title="Copy"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button></div>
+        <div class="stack-card-code"><span class="code-text">git clone https://github.com/lightninglabs/aperture.git && make install</span><button class="copy-btn" title="Copy"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button></div>
         <div class="stack-card-links">
           <a href="https://github.com/lightninglabs/aperture">GitHub</a>
           <a href="https://docs.lightning.engineering/lightning-network-tools/aperture/get-aperture">Docs</a>
@@ -1989,7 +2151,7 @@ body {
         </div>
         <div class="stack-card-type">L402-aware HTTP client</div>
         <div class="stack-card-desc">A command-line HTTP client like wget or curl, designed for programmatic access to paid APIs. When it hits a 402 response, it automatically pays the Lightning invoice, caches the token, and retries with the proper Authorization header. Supports LND, LNC, and regtest backends.</div>
-        <div class="stack-card-code"><span class="code-text">lnget https://api.example.com/data</span><button class="copy-btn" onclick="copyCode(this)" title="Copy"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button></div>
+        <div class="stack-card-code"><span class="code-text">lnget https://api.example.com/data</span><button class="copy-btn" title="Copy"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button></div>
         <div class="stack-card-links">
           <a href="https://github.com/lightninglabs/lnget">GitHub</a>
           <a href="https://lightning.engineering/posts/2026-02-11-ln-agent-tools/">Blog post</a>
@@ -2003,7 +2165,7 @@ body {
         </div>
         <div class="stack-card-type">AI agent toolkit</div>
         <div class="stack-card-desc">Seven composable skills for the full agent commerce stack: running a Lightning node, isolating keys with a remote signer, baking scoped macaroons, paying L402 APIs, hosting paid endpoints, and querying node state via MCP. Built for agents that transact autonomously.</div>
-        <div class="stack-card-code"><span class="code-text">Install Lightning Agent Tools and set up a Lightning node with remote signer</span><button class="copy-btn" onclick="copyCode(this)" title="Copy"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button></div>
+        <div class="stack-card-code"><span class="code-text">Install Lightning Agent Tools and set up a Lightning node with remote signer</span><button class="copy-btn" title="Copy"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button></div>
         <div class="stack-card-links">
           <a href="https://github.com/lightninglabs/lightning-agent-tools">GitHub</a>
           <a href="https://lightning.engineering/posts/2026-02-11-ln-agent-tools/">Blog post</a>
@@ -2014,12 +2176,96 @@ body {
 
 </section>
 
+<!-- ============================================================
+     L402 SDK — Multi-language client SDK
+     ============================================================ -->
+<section class="sdk-section" id="sdk">
+  <div class="sdk-inner">
+    <div class="sdk-overline">Client SDK</div>
+    <h2 class="sdk-title">One protocol. Every language.</h2>
+    <p class="sdk-subtitle">L402sdk is the client SDK for AI agent frameworks. Written in Rust, compiled to native and WASM. Drop it into your stack and start paying for APIs with Lightning.</p>
+
+    <div class="sdk-langs" id="sdkTabs">
+      <div class="sdk-lang-tab active" data-lang="rust">Rust</div>
+      <div class="sdk-lang-tab" data-lang="npm">npm / WASM</div>
+      <div class="sdk-lang-tab" data-lang="go">Go</div>
+      <div class="sdk-lang-tab" data-lang="python">Python</div>
+    </div>
+
+    <div class="sdk-code-panel active" data-lang="rust">
+      <span class="hl-dim"># Add to Cargo.toml</span><br>
+      [dependencies]<br>
+      <span class="hl">l402-core</span> = <span class="hl-lime">"latest"</span><br>
+      <br>
+      <span class="hl-dim">// Rust — pay for an L402-gated API</span><br>
+      <span class="hl-violet">let</span> client = <span class="hl">L402Client</span>::new(lnd_config);<br>
+      <span class="hl-violet">let</span> response = client.<span class="hl">get</span>(<span class="hl-lime">"https://api.example.com/data"</span>).<span class="hl-violet">await</span>?;
+      <button class="copy-btn" title="Copy"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>
+      <span class="code-text" style="display:none">cargo add l402-core</span>
+    </div>
+
+    <div class="sdk-code-panel" data-lang="npm">
+      <span class="hl-dim"># Install via npm</span><br>
+      npm install <span class="hl">@lightninglabs/l402</span><br>
+      <br>
+      <span class="hl-dim">// JavaScript / TypeScript — WASM-powered</span><br>
+      <span class="hl-violet">import</span> { <span class="hl">L402Client</span> } <span class="hl-violet">from</span> <span class="hl-lime">'@lightninglabs/l402'</span>;<br>
+      <span class="hl-violet">const</span> client = <span class="hl-violet">new</span> <span class="hl">L402Client</span>(config);<br>
+      <span class="hl-violet">const</span> res = <span class="hl-violet">await</span> client.<span class="hl">get</span>(<span class="hl-lime">'https://api.example.com/data'</span>);
+      <button class="copy-btn" title="Copy"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>
+      <span class="code-text" style="display:none">npm install @lightninglabs/l402</span>
+    </div>
+
+    <div class="sdk-code-panel" data-lang="go">
+      <span class="hl-dim"># Install the Go binding</span><br>
+      go get <span class="hl">github.com/lightninglabs/L402sdk/bindings/l402-go</span><br>
+      <br>
+      <span class="hl-dim">// Go — native binding via FFI</span><br>
+      client := <span class="hl">l402</span>.<span class="hl">NewClient</span>(lndConfig)<br>
+      resp, err := client.<span class="hl">Get</span>(<span class="hl-lime">"https://api.example.com/data"</span>)
+      <button class="copy-btn" title="Copy"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>
+      <span class="code-text" style="display:none">go get github.com/lightninglabs/L402sdk/bindings/l402-go</span>
+    </div>
+
+    <div class="sdk-code-panel" data-lang="python">
+      <span class="hl-dim"># Install via pip</span><br>
+      pip install <span class="hl">l402</span><br>
+      <br>
+      <span class="hl-dim"># Python — pay for APIs in 3 lines</span><br>
+      <span class="hl-violet">from</span> <span class="hl">l402</span> <span class="hl-violet">import</span> L402Client<br>
+      client = <span class="hl">L402Client</span>(lnd_config)<br>
+      response = client.<span class="hl">get</span>(<span class="hl-lime">"https://api.example.com/data"</span>)
+      <button class="copy-btn" title="Copy"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>
+      <span class="code-text" style="display:none">pip install l402</span>
+    </div>
+
+    <div class="sdk-features">
+      <div class="sdk-feature">
+        <div class="sdk-feature-label" style="color:var(--cyan)">Core</div>
+        <div class="sdk-feature-text">Written in Rust. Single codebase compiled to native binary, WASM, and cross-language bindings via FFI. No runtime overhead.</div>
+      </div>
+      <div class="sdk-feature">
+        <div class="sdk-feature-label" style="color:var(--lime)">Automatic</div>
+        <div class="sdk-feature-text">Detects 402 responses, pays Lightning invoices, caches credentials, retries. The L402 handshake is invisible to your application code.</div>
+      </div>
+      <div class="sdk-feature">
+        <div class="sdk-feature-label" style="color:var(--violet)">Framework-ready</div>
+        <div class="sdk-feature-text">Drop into LangChain, CrewAI, OpenClaw, or any AI agent framework. Your agents pay for APIs without custom payment logic.</div>
+      </div>
+    </div>
+
+    <div class="sdk-cta">
+      <a href="https://github.com/lightninglabs/L402sdk">GitHub →</a>
+    </div>
+  </div>
+</section>
+
 <section class="purple-section" id="agents">
 
   <div class="purple-header">
     <div class="purple-overline">Agent-ready infrastructure</div>
     <h2 class="purple-title">Ready for agents.</h2>
-    <p class="purple-subtitle">L402 gives autonomous software a native way to discover, pay for, and authenticate with any service. Private machine payments, settled in milliseconds. No accounts, no intermediaries, no human in the loop.</p>
+    <p class="purple-subtitle">L402 gives autonomous software a native way to discover, pay for, and authenticate with any service. Private machine payments, settled in under a second. No accounts, no intermediaries, no human in the loop.</p>
   </div>
 
   <!-- Terminal demo — agent paying for an API -->
@@ -2035,7 +2281,7 @@ body {
       <div class="terminal-line" data-delay="1"><span class="terminal-prompt">$ </span><span class="terminal-cmd">lnget</span> <span class="terminal-url">https://api.weather.com/v2/forecast</span></div>
       <div class="terminal-line" data-delay="2"><span class="terminal-comment"># Server returns 402 Payment Required</span></div>
       <div class="terminal-line" data-delay="3">⚡ Invoice: <span class="terminal-value">50 sats</span> — paying automatically...</div>
-      <div class="terminal-line" data-delay="4">✓ <span class="terminal-success">Payment settled in 48ms</span></div>
+      <div class="terminal-line" data-delay="4">✓ <span class="terminal-success">Payment settled in &lt;1 second</span></div>
       <div class="terminal-line" data-delay="5">✓ <span class="terminal-success">L402 token cached for api.weather.com</span></div>
       <div class="terminal-line" data-delay="6"><span class="terminal-comment"># Subsequent requests reuse the token — no re-payment</span></div>
       <div class="terminal-line" data-delay="7"><span class="terminal-prompt">$ </span><span class="terminal-cmd">lnget</span> <span class="terminal-url">https://api.weather.com/v2/history</span></div>
@@ -2105,7 +2351,6 @@ body {
 
   <div class="footer-bottom">
     <span>L402 is an open protocol. <a href="https://github.com/lightninglabs/L402/blob/master/LICENSE">MIT License</a></span>
-    <span>Built by <a href="https://lightning.engineering">Lightning Labs</a></span>
   </div>
 </footer>
 
@@ -2116,21 +2361,41 @@ body {
 (function() {
   'use strict';
 
-  // Copy code to clipboard
-  function copyCode(btn) {
+  // Copy code to clipboard — uses event delegation
+  document.addEventListener('click', function(e) {
+    var btn = e.target.closest('.copy-btn');
+    if (!btn) return;
     var text = btn.parentElement.querySelector('.code-text').textContent;
-    navigator.clipboard.writeText(text).then(function() {
-      btn.classList.add('copied');
-      // Swap icon to checkmark
-      btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>';
-      setTimeout(function() {
-        btn.classList.remove('copied');
-        btn.innerHTML = '<svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>';
-      }, 2000);
-    });
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function() {
+        showCopied(btn);
+      }).catch(function() {
+        fallbackCopy(text, btn);
+      });
+    } else {
+      fallbackCopy(text, btn);
+    }
+  });
+
+  function fallbackCopy(text, btn) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); showCopied(btn); } catch(e) {}
+    document.body.removeChild(ta);
   }
-  // Make it global so onclick works
-  window.copyCode = copyCode;
+
+  function showCopied(btn) {
+    btn.classList.add('copied');
+    btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>';
+    setTimeout(function() {
+      btn.classList.remove('copied');
+      btn.innerHTML = '<svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>';
+    }, 2000);
+  }
 
   // NAV scroll state
   const nav = document.getElementById('nav');
@@ -2290,6 +2555,23 @@ body {
   updateScenes();
 
   // ============================================================
+  // SDK TABS — language switcher
+  // ============================================================
+  var sdkTabs = document.querySelectorAll('.sdk-lang-tab');
+  var sdkPanels = document.querySelectorAll('.sdk-code-panel');
+
+  sdkTabs.forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      var lang = this.getAttribute('data-lang');
+      sdkTabs.forEach(function(t) { t.classList.remove('active'); });
+      sdkPanels.forEach(function(p) { p.classList.remove('active'); });
+      this.classList.add('active');
+      var target = document.querySelector('.sdk-code-panel[data-lang="' + lang + '"]');
+      if (target) target.classList.add('active');
+    });
+  });
+
+  // ============================================================
   // TERMINAL ANIMATION — lines appear when section scrolls in
   // ============================================================
   var terminalDemo = document.getElementById('terminalDemo');
@@ -2366,7 +2648,8 @@ body {
   // Apple-style hero with interactive particle typography
   // ============================================================
   const canvas = document.getElementById('particles');
-  if (canvas && !('ontouchstart' in window)) {
+  if (canvas) {
+    const isTouchDevice = 'ontouchstart' in window;
     const ctx = canvas.getContext('2d');
     let W, H, mouseX = -999, mouseY = -999;
     let textPoints = [], nodes = [], arcs = [];
@@ -2391,6 +2674,8 @@ body {
     }
 
     // Sample points from text rendered to an offscreen canvas
+    var particleFont = '700 FONTSIZE "Instrument Sans", "Arial Black", "Helvetica Neue", sans-serif';
+
     function sampleTextPoints() {
       const offscreen = document.createElement('canvas');
       const octx = offscreen.getContext('2d');
@@ -2399,7 +2684,7 @@ body {
 
       // Draw L402 large and centered, shifted up to leave room for content below
       const fontSize = Math.min(W * 0.28, 260);
-      octx.font = '700 ' + fontSize + 'px "Instrument Sans", sans-serif';
+      octx.font = particleFont.replace('FONTSIZE', fontSize + 'px');
       octx.textAlign = 'center';
       octx.textBaseline = 'middle';
       octx.fillStyle = '#fff';
@@ -2409,7 +2694,7 @@ body {
       const imageData = octx.getImageData(0, 0, W, H);
       const data = imageData.data;
       const points = [];
-      const gap = 6; // density of sampling
+      const gap = isTouchDevice ? 8 : 6; // less dense on mobile for performance
 
       for (let y = 0; y < H; y += gap) {
         for (let x = 0; x < W; x += gap) {
@@ -2475,7 +2760,7 @@ body {
       frameCount++;
 
       const mx = mouseX, my = mouseY;
-      const hasMouse = mx > -500;
+      const hasMouse = !isTouchDevice && mx > -500;
       const entropy = window.__l402entropy || 0;
       const materialized = frameCount > FADE_DURATION;
 
@@ -2571,28 +2856,64 @@ body {
     }
 
     // Track mouse relative to the canvas position
-    document.addEventListener('mousemove', function(e) {
-      const rect = canvas.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      // Only active when mouse is actually over the hero canvas area
-      if (x >= 0 && x <= rect.width && y >= 0 && y <= rect.height) {
-        mouseX = x;
-        mouseY = y;
-      } else {
+    if (!isTouchDevice) {
+      document.addEventListener('mousemove', function(e) {
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        if (x >= 0 && x <= rect.width && y >= 0 && y <= rect.height) {
+          mouseX = x;
+          mouseY = y;
+        } else {
+          mouseX = -999;
+          mouseY = -999;
+        }
+      });
+
+      document.addEventListener('mouseleave', function() {
         mouseX = -999;
         mouseY = -999;
+      });
+    }
+
+    // Robust init — try up to 3 times with increasing delay
+    function initParticles() {
+      resize();
+      createNodes();
+      if (nodes.length > 10) {
+        draw();
+        return true;
       }
-    });
+      return false;
+    }
 
-    document.addEventListener('mouseleave', function() {
-      mouseX = -999;
-      mouseY = -999;
-    });
+    function tryInit(attempt) {
+      if (attempt > 5) {
+        // Last resort — force draw with whatever font is available
+        resize();
+        createNodes();
+        draw();
+        return;
+      }
+      if (!initParticles()) {
+        setTimeout(function() { tryInit(attempt + 1); }, 300 * attempt);
+      }
+    }
 
-    resize();
-    createNodes();
-    draw();
+    // Start after fonts.ready, with fallback timeout
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(function() {
+        tryInit(1);
+      });
+      // Safety — if fonts.ready never resolves properly
+      setTimeout(function() {
+        if (nodes.length < 10) tryInit(1);
+      }, 1500);
+    } else {
+      // No fonts API — just try with delays
+      setTimeout(function() { tryInit(1); }, 500);
+    }
+
     window.addEventListener('resize', function() {
       resize();
       createNodes();

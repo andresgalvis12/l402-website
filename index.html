@@ -2696,11 +2696,11 @@ body {
     // off-balance "0" hole. We keep Instrument Sans — only the rasterization
     // resolution and threshold change.
     const SUPER = 8;
-    // Coverage threshold for "lit" cells. At 6x rasterization the edge AA
-    // is ~36x sub-pixel-finer than the sampling grid, so we can afford to
-    // demand higher coverage (>78%) — kills the soft halo that was producing
-    // the residual curve stair-steps on the "0" and "2".
-    const ALPHA_THRESHOLD = 200;
+    // Standard 50% alpha coverage threshold — matches the v5 reference
+    // behavior. With SUPER=8 supersampling the edge pixels in the offscreen
+    // raster are nearly binary anyway, so this produces the same dot set as
+    // higher thresholds (verified bit-identical at 128 vs 200 in preview).
+    const ALPHA_THRESHOLD = 128;
 
     function sampleTextPoints() {
       const dpr = window.devicePixelRatio || 1;
@@ -2719,12 +2719,13 @@ body {
       offscreen.height = Math.round(H * scale);
       const octx = offscreen.getContext('2d');
 
-      // Gap scales proportionally with fontSize — no Math.round, so mobile
-      // gets natural fewer-but-larger dots instead of crammed-together fine ones.
-      // Floor at 3 so a single dot still has breathing room even at small sizes.
+      // Visual parameters restored to the v5 reference values so the logo's
+      // density and dot weight match the brand asset exactly. The supersampling
+      // + grid alignment + seeded color above are what fix the symmetry
+      // artifacts; the dot size and gap are independent visual choices.
       const fontSize = Math.min(W * 0.28, 260);
-      const gap = Math.max(3, fontSize * 0.028);
-      const dotSize = gap * 0.45;
+      const gap = isTouchDevice ? 8 : 6;
+      const dotSize = 2;
 
       // Snap the text center to the SAMPLE GRID (multiples of gap), not just
       // to integer CSS px. This puts the text's geometric center exactly on a

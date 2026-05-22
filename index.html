@@ -2659,7 +2659,6 @@ body {
       return { r: parseInt(hex.slice(1,3),16), g: parseInt(hex.slice(3,5),16), b: parseInt(hex.slice(5,7),16) };
     }
 
-    const DOT_SIZE = 2;
     const MOUSE_RADIUS = 60;
 
     function resize() {
@@ -2694,13 +2693,16 @@ body {
       const imageData = octx.getImageData(0, 0, W, H);
       const data = imageData.data;
       const points = [];
-      const gap = isTouchDevice ? 8 : 6; // less dense on mobile for performance
+      // Gap & dot size proportional to fontSize so density stays constant
+      // across viewports. Calibrated so fontSize=260 yields gap≈6, dot≈2 (desktop look unchanged).
+      const gap = Math.max(2, Math.round(fontSize * 0.023));
+      const dotSize = Math.max(0.9, fontSize * 0.0077);
 
       for (let y = 0; y < H; y += gap) {
         for (let x = 0; x < W; x += gap) {
           const i = (y * W + x) * 4;
           if (data[i + 3] > 128) {
-            points.push({ x, y });
+            points.push({ x, y, dotSize });
           }
         }
       }
@@ -2722,6 +2724,7 @@ body {
           y: tp.y,
           vx: 0,
           vy: 0,
+          dotSize: tp.dotSize,
           color: c,
           rgb: hexRgb(c),
           fadeIn: 0.6 + Math.random() * 0.8,
@@ -2847,7 +2850,7 @@ body {
         const alpha = fadeProgress;
 
         ctx.beginPath();
-        ctx.arc(n.x, n.y, DOT_SIZE, 0, Math.PI * 2);
+        ctx.arc(n.x, n.y, n.dotSize, 0, Math.PI * 2);
         ctx.fillStyle = 'rgba(' + n.rgb.r + ',' + n.rgb.g + ',' + n.rgb.b + ',' + alpha + ')';
         ctx.fill();
       }
